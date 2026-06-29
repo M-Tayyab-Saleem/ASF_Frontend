@@ -48,7 +48,7 @@ export const HomePage = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-light text-text-primary mb-4">
-            AI Security Framework Explorer
+            AI Security Framework
           </h1>
           <p className="text-text-secondary text-lg">
             Select a strategy to explore capabilities, controls, and tools

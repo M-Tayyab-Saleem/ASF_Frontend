@@ -15,7 +15,7 @@ export const Header = () => {
               [ ASF ]
             </span>
             <span className="text-text-muted text-sm hidden sm:block">
-              AI Security Framework Explorer
+              AI Security Framework
             </span>
           </Link>
           <div className="ml-auto">
