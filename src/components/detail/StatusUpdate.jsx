@@ -29,7 +29,7 @@ export const StatusUpdate = ({ controlId, currentStatus, onStatusUpdate }) => {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="bg-[#0A0A0A] border border-border rounded px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-gold"
+          className="bg-white border border-border rounded px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-[2px] focus:ring-primary-light"
         >
           <option value="Pending">Pending</option>
           <option value="Implemented">Implemented</option>
@@ -38,13 +38,13 @@ export const StatusUpdate = ({ controlId, currentStatus, onStatusUpdate }) => {
         <button
           onClick={handleSave}
           disabled={saving || status === currentStatus}
-          className="bg-gold text-black text-sm font-medium px-4 py-1.5 rounded hover:bg-gold-light transition-colors disabled:opacity-50"
+          className="bg-primary text-text-onPrimary text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50"
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
       </div>
       {error && (
-        <p className="text-xs text-[#8A5A5A] mt-2">{error}</p>
+        <p className="text-xs text-status-notImplemented mt-2">{error}</p>
       )}
     </div>
   );

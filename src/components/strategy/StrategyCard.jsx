@@ -9,15 +9,15 @@ export const StrategyCard = ({ strategy, isActive, onClick }) => {
       className={`
         relative cursor-pointer rounded-lg p-6 transition-all duration-150 ease-in-out
         ${isActive 
-          ? 'bg-[#141008] border-l-[3px] border-l-gold border-y border-r border-y-border border-r-border' 
-          : 'bg-surface-1 border border-border hover:bg-surface-2 hover:border-border-gold'
+          ? 'bg-primary-light border-l-[3px] border-l-primary border-y border-r border-y-border border-r-border' 
+          : 'bg-white border border-border hover:bg-surface-1 hover:border-primary'
         }
       `}
     >
       <div className="flex justify-between items-start mb-4">
         <IDTag id={strategy.strategyId} />
         {strategy.capabilityCount > 0 && (
-          <span className="text-xs text-text-secondary bg-surface-3 px-2 py-1 rounded">
+          <span className="text-xs text-text-secondary bg-surface-2 px-2 py-1 rounded">
             {strategy.capabilityCount} caps
           </span>
         )}

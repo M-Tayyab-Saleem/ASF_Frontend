@@ -31,7 +31,7 @@ export const CollapsibleControlRow = ({ control }) => {
       </button>
 
       {isExpanded && (
-        <div className="p-4 border-t border-border bg-[#1A1A1A]">
+        <div className="p-4 border-t border-border bg-white">
           {control.controlDescription && (
             <div className="mb-4">
               <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1">Description</h5>

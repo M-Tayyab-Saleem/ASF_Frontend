@@ -58,14 +58,14 @@ export const SignupPage = () => {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full max-w-md bg-surface-1 border border-border rounded-lg p-8">
+      <div className="w-full max-w-md bg-white border border-border rounded-lg p-8">
         <div className="text-center mb-8">
-          <span className="font-mono text-gold font-bold text-2xl tracking-wider">[ ASF ]</span>
+          <span className="font-sans text-primary font-bold text-2xl tracking-wider">[ ASF ]</span>
           <h1 className="text-xl font-light text-text-primary mt-2">Create your account</h1>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-[#8A5A5A]/10 border border-[#8A5A5A]/30 rounded text-sm text-[#8A5A5A]">
+          <div className="mb-4 p-3 bg-status-notImplementedBg border border-status-notImplemented rounded text-sm text-status-notImplemented">
             {error}
           </div>
         )}
@@ -77,7 +77,7 @@ export const SignupPage = () => {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-gold transition-colors"
+              className="w-full bg-white border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary-light transition-all"
               required
             />
           </div>
@@ -88,7 +88,7 @@ export const SignupPage = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-gold transition-colors"
+              className="w-full bg-white border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary-light transition-all"
               required
             />
           </div>
@@ -99,7 +99,7 @@ export const SignupPage = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-gold transition-colors"
+              className="w-full bg-white border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary-light transition-all"
               required
             />
             <p className="text-xs text-text-muted mt-1">Min 8 chars, 1 uppercase, 1 number</p>
@@ -111,7 +111,7 @@ export const SignupPage = () => {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-gold transition-colors"
+              className="w-full bg-white border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary-light transition-all"
               required
             />
           </div>
@@ -119,7 +119,7 @@ export const SignupPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gold text-black font-medium py-2 rounded hover:bg-gold-light transition-colors disabled:opacity-50"
+            className="w-full bg-primary text-text-onPrimary font-semibold py-2.5 rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50"
           >
             {loading ? 'Creating account...' : 'Create account'}
           </button>
@@ -127,7 +127,7 @@ export const SignupPage = () => {
 
         <p className="text-center text-text-muted text-sm mt-6">
           Already have an account?{' '}
-          <Link to="/login" className="text-gold hover:text-gold-light transition-colors">
+          <Link to="/login" className="text-primary hover:text-primary-hover transition-colors font-medium">
             Sign in
           </Link>
         </p>

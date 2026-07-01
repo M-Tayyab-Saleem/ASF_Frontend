@@ -6,11 +6,16 @@ import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { EmptyState } from '../shared/EmptyState';
 import { ToolGrid } from '../tool/ToolGrid';
 import { ToolCard } from '../tool/ToolCard';
+import { EvidenceSection } from './EvidenceSection';
+import { StatusUpdate } from './StatusUpdate';
+import { useAuth } from '../../context/AuthContext';
 
 export const ControlDetail = ({ controlId }) => {
   const [control, setControl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
     if (!controlId) return;
@@ -49,51 +54,63 @@ export const ControlDetail = ({ controlId }) => {
   }
 
   return (
-    <div className="p-6 bg-surface-1 rounded-lg border border-border h-full overflow-y-auto">
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <IDTag id={control.controlId} />
-          {control.priority && <Badge label={control.priority} type="priority" />}
-          {control.status && <Badge label={control.status} type="status" />}
+    <div className="p-6 bg-white rounded-lg border border-border h-full overflow-y-auto">
+      <div className="mb-6 flex justify-between items-start">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <IDTag id={control.controlId} />
+            {control.priority && <Badge label={control.priority} type="priority" />}
+            {control.status && <Badge label={control.status} type="status" />}
+          </div>
+          <h2 className="text-2xl font-bold text-text-primary mb-4">
+            <span className="text-primary mr-2">{control.controlName}</span>
+          </h2>
+          {control.controlDescription && (
+            <p className="text-text-secondary leading-relaxed mb-4">
+              {control.controlDescription}
+            </p>
+          )}
+          {control.controlObjective && (
+            <div className="mb-4">
+              <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Objective</h5>
+              <p className="text-sm text-text-secondary">{control.controlObjective}</p>
+            </div>
+          )}
         </div>
-        <h2 className="text-2xl font-light text-text-primary mb-4">
-          <span className="text-gold mr-2">{control.controlName}</span>
-        </h2>
-        {control.controlDescription && (
-          <p className="text-text-secondary leading-relaxed mb-4">
-            {control.controlDescription}
-          </p>
-        )}
-        {control.controlObjective && (
-          <div className="mb-4">
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1">Objective</h5>
-            <p className="text-sm text-text-secondary">{control.controlObjective}</p>
+        
+        {isAdmin && (
+          <div className="shrink-0 ml-4">
+            <StatusUpdate 
+              controlId={control.controlId} 
+              currentStatus={control.status}
+              onStatusUpdate={(newStatus) => setControl({ ...control, status: newStatus })}
+            />
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 bg-surface-2 p-4 rounded-lg border border-border">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 bg-surface-1 p-4 rounded-lg border border-border">
         {control.controlDomain && (
           <div>
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1">Domain</h5>
+            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Domain</h5>
             <p className="text-sm text-text-secondary">{control.controlDomain}</p>
           </div>
         )}
         {control.owner && (
           <div>
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1">Owner</h5>
+            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Owner</h5>
             <p className="text-sm text-text-secondary">{control.owner}</p>
           </div>
         )}
         {control.lifecycleStage && (
           <div>
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1">Lifecycle Stage</h5>
+            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Lifecycle Stage</h5>
             <p className="text-sm text-text-secondary">{control.lifecycleStage}</p>
           </div>
         )}
         {control.implementationState && (
           <div>
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1">Implementation</h5>
+            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Implementation</h5>
             <p className="text-sm text-text-secondary">{control.implementationState}</p>
           </div>
         )}
@@ -105,13 +122,15 @@ export const ControlDetail = ({ controlId }) => {
       
       {control.tools && control.tools.length > 0 ? (
         <ToolGrid>
-          {control.tools.map((tool) => (
-            <ToolCard key={tool.toolId} tool={tool} />
+          {control.tools.map((tool, index) => (
+            <ToolCard key={tool._id || tool.toolId + '-' + index} tool={tool} />
           ))}
         </ToolGrid>
       ) : (
         <p className="text-sm text-text-muted">No tools mapped</p>
       )}
+
+      <EvidenceSection controlId={control.controlId} />
     </div>
   );
 };

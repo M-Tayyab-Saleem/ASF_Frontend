@@ -47,14 +47,20 @@ export const EvidenceSection = ({ controlId }) => {
     if (!file) return;
 
     const ext = file.name.split('.').pop()?.toLowerCase();
-    const allowedExts = ['pdf', 'png', 'jpg', 'jpeg', 'webp'];
+    const allowedExts = ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'txt'];
     if (!allowedExts.includes(ext)) {
-      setError('Only PDF and image files are allowed');
+      setError('Only PDF, TXT, and image files are allowed');
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setError('File exceeds 10 MB limit');
+    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp', 'text/plain'];
+    if (!allowedMimeTypes.includes(file.type)) {
+      setError('Invalid file type');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError('File exceeds 5 MB limit');
       return;
     }
 
@@ -108,7 +114,7 @@ export const EvidenceSection = ({ controlId }) => {
       <h3 className="text-lg font-medium text-text-primary mb-4">Evidence</h3>
 
       <div className="mb-4">
-        <label className="inline-flex items-center gap-2 cursor-pointer bg-gold text-black text-sm font-medium px-4 py-2 rounded hover:bg-gold-light transition-colors">
+        <label className="inline-flex items-center gap-2 cursor-pointer bg-primary text-text-onPrimary text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary-hover transition-colors">
           <Upload size={16} />
           {uploading ? `Uploading...` : 'Upload Evidence'}
           <input
@@ -121,10 +127,10 @@ export const EvidenceSection = ({ controlId }) => {
         </label>
         {uploading && (
           <div className="mt-2 w-full bg-surface-2 rounded h-1">
-            <div className="bg-gold h-full rounded transition-all" style={{ width: `${uploadProgress}%` }} />
+            <div className="bg-primary h-full rounded transition-all" style={{ width: `${uploadProgress}%` }} />
           </div>
         )}
-        {error && <p className="text-xs text-[#8A5A5A] mt-1">{error}</p>}
+        {error && <p className="text-xs text-status-notImplemented mt-1">{error}</p>}
       </div>
 
       {loading ? (
@@ -146,8 +152,8 @@ export const EvidenceSection = ({ controlId }) => {
             </thead>
             <tbody>
               {evidenceList.map((item) => (
-                <tr key={item._id} className="border-b border-border hover:bg-surface-2 transition-colors">
-                  <td className="py-2 px-2 text-text-primary">
+                <tr key={item._id} className="border-b border-border hover:bg-surface-1 transition-colors bg-white even:bg-surface-1">
+                  <td className="py-3 px-2 text-text-primary">
                     <span className="flex items-center gap-1">
                       {item.fileType === 'image' ? <Image size={14} className="text-text-muted" /> : <FileText size={14} className="text-text-muted" />}
                       {item.fileName}
@@ -163,7 +169,7 @@ export const EvidenceSection = ({ controlId }) => {
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => handleDownload(item)}
-                        className="p-1 text-text-muted hover:text-gold transition-colors"
+                        className="p-1 text-text-muted hover:text-primary transition-colors"
                         title="Download"
                       >
                         <Download size={14} />
@@ -171,7 +177,7 @@ export const EvidenceSection = ({ controlId }) => {
                       {isAdmin && (
                         <button
                           onClick={() => handleDelete(item._id)}
-                          className="p-1 text-text-muted hover:text-[#8A5A5A] transition-colors"
+                          className="p-1 text-text-muted hover:text-status-notImplemented transition-colors"
                           title="Delete"
                         >
                           <Trash2 size={14} />

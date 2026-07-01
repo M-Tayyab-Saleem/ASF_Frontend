@@ -4,33 +4,46 @@ export default {
   theme: {
     extend: {
       colors: {
-        gold: {
-          DEFAULT: '#C9A84C',
-          light: '#E8C97A',
-          dark: '#9A7A2E',
-          muted: '#6B5520',
+        primary: {
+          DEFAULT: '#00B097',
+          hover: '#009A84',
+          light: '#E6F7F5',
+          dark: '#007A6A',
+        },
+        secondary: {
+          DEFAULT: '#D3BDF2',
+          light: '#F2ECFD',
+          dark: '#A98FD4',
         },
         surface: {
-          1: '#111111',
-          2: '#1A1A1A',
-          3: '#222222',
+          1: '#F8F9FA',
+          2: '#F1F3F5',
+          dark: '#0D0D0D',
         },
         border: {
-          DEFAULT: '#2A2A2A',
-          gold: '#9A7A2E',
+          DEFAULT: '#E2E8F0',
+          strong: '#CBD5E0',
+          primary: '#00B097',
         },
         text: {
-          primary: '#F5F0E8',
-          secondary: '#A09880',
-          muted: '#5A5040',
+          primary: '#0D0D0D',
+          secondary: '#4A5568',
+          muted: '#9AA3AF',
+          onDark: '#FFFFFF',
+          onPrimary: '#FFFFFF',
         },
+        status: {
+          implemented: '#10B981',
+          implementedBg: '#D1FAE5',
+          notImplemented: '#EF4444',
+          notImplementedBg: '#FEE2E2',
+          pending: '#F59E0B',
+          pendingBg: '#FEF3C7',
+        }
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-      },
-      backgroundImage: {
-        // No gradients — intentionally empty
+        sans: ['Inter', 'sans-serif'],
+        mono: ['Courier New', 'monospace'],
       },
     },
   },

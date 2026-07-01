@@ -9,8 +9,8 @@ export const CapabilityCard = ({ capability, isActive, onClick }) => {
       className={`
         w-full text-left flex items-start gap-3 p-3 rounded transition-colors
         ${isActive
-          ? 'bg-[#141008] border-l-2 border-l-gold'
-          : 'hover:bg-surface-2 border-l-2 border-transparent'
+          ? 'bg-primary-light border-l-[3px] border-l-primary'
+          : 'hover:bg-surface-2 border-l-[3px] border-transparent'
         }
       `}
     >

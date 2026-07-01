@@ -85,7 +85,7 @@ export const StrategyPage = () => {
   }
 
   return (
-    <div className="bg-[#0A0A0A] min-h-screen p-6 flex flex-col max-h-screen overflow-hidden">
+    <div className="bg-white min-h-screen p-6 flex flex-col max-h-screen overflow-hidden">
       <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0">
         <Breadcrumb items={breadcrumbItems} />
 
@@ -96,7 +96,7 @@ export const StrategyPage = () => {
               <button
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'capabilities'
-                    ? 'text-gold border-b-2 border-gold bg-[#141008]'
+                    ? 'text-primary border-b-2 border-primary bg-primary-light'
                     : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
                 }`}
                 onClick={() => handleTabChange('capabilities')}
@@ -106,7 +106,7 @@ export const StrategyPage = () => {
               <button
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'controls'
-                    ? 'text-gold border-b-2 border-gold bg-[#141008]'
+                    ? 'text-primary border-b-2 border-primary bg-primary-light'
                     : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
                 }`}
                 onClick={() => handleTabChange('controls')}
@@ -150,10 +150,10 @@ export const StrategyPage = () => {
           
           {/* Mobile Detail Overlay */}
           {itemId && (
-             <div className="md:hidden fixed inset-0 z-50 bg-[#0A0A0A] flex flex-col p-6">
+             <div className="md:hidden fixed inset-0 z-50 bg-white flex flex-col p-6">
                 <button 
                   onClick={() => navigate(`/strategy/${strategyId}`)}
-                  className="mb-4 text-gold"
+                  className="mb-4 text-primary"
                 >
                    ← Back to List
                 </button>

@@ -44,7 +44,7 @@ export const HomePage = () => {
   }
 
   return (
-    <div className="bg-[#0A0A0A] min-h-screen py-12 px-6">
+    <div className="bg-white min-h-screen py-12 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-light text-text-primary mb-4">

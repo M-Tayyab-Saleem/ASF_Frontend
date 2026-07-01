@@ -48,14 +48,14 @@ export const CapabilityDetail = ({ capabilityId }) => {
   }
 
   return (
-    <div className="p-6 bg-surface-1 rounded-lg border border-border h-full overflow-y-auto">
+    <div className="p-6 bg-white rounded-lg border border-border h-full overflow-y-auto">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <IDTag id={capability.capabilityId} />
           <Badge label={capability.capabilityCategory} type="status" />
         </div>
-        <h2 className="text-2xl font-light text-text-primary mb-4">
-          <span className="text-gold mr-2">{capability.capabilityName}</span>
+        <h2 className="text-2xl font-bold text-text-primary mb-4">
+          <span className="text-primary mr-2">{capability.capabilityName}</span>
         </h2>
         {capability.capabilityDescription && (
           <p className="text-text-secondary leading-relaxed">

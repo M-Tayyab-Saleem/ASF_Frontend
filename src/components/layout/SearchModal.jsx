@@ -82,15 +82,15 @@ export const SearchModal = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-[100] flex justify-center items-start pt-20 px-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-[#0A0A0A]/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-3xl bg-surface-1 border border-border rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+      <div className="relative w-full max-w-3xl bg-white border border-border rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[80vh]">
         
         {/* Search Input Area */}
-        <div className="flex items-center px-4 py-4 border-b border-border bg-[#111111]">
+        <div className="flex items-center px-4 py-4 border-b border-border bg-surface-1">
           <Search className="text-text-muted mr-3" size={20} />
           <input
             ref={inputRef}
@@ -230,7 +230,7 @@ const ResultItem = ({ id, name, desc, onClick }) => (
       <IDTag id={id} />
     </div>
     <div className="ml-4 flex-1 min-w-0">
-      <div className="font-medium text-text-primary group-hover:text-gold transition-colors truncate">
+      <div className="font-medium text-text-primary group-hover:text-primary transition-colors truncate">
         {name}
       </div>
       {desc && (
@@ -239,7 +239,7 @@ const ResultItem = ({ id, name, desc, onClick }) => (
         </div>
       )}
     </div>
-    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center ml-4 text-gold">
+    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center ml-4 text-primary">
       <ChevronRight size={16} />
     </div>
   </button>

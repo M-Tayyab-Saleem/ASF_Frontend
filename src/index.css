@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-[#0A0A0A] text-text-primary antialiased;
+    @apply bg-white text-text-primary antialiased;
   }
 }
 
@@ -15,20 +15,20 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A0A0A; 
+  background: #F8F9FA; 
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A2A2A; 
+  background: #E2E8F0; 
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #C9A84C; 
+  background: #00B097; 
 }
 
 /* For Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2A2A2A #0A0A0A;
+  scrollbar-color: #E2E8F0 #F8F9FA;
 }

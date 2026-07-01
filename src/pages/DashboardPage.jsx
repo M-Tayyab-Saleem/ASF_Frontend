@@ -5,9 +5,9 @@ import { getMyDashboard, getUserDashboard, getAllDashboard, getDashboardUsers, u
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
 
 const STATUS_COLORS = {
-  Implemented: '#5A8A6A',
-  'Not Implemented': '#8A5A5A',
-  Pending: '#6B5520'
+  Implemented: '#008575',
+  'Not Implemented': '#E02020',
+  Pending: '#F5A623'
 };
 
 const StatCard = ({ label, count, percentage, color }) => (
@@ -25,44 +25,52 @@ const StatCard = ({ label, count, percentage, color }) => (
   </div>
 );
 
+import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-border p-3 rounded-lg shadow-lg">
+        <p className="font-semibold text-text-primary mb-2">{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} style={{ color: entry.color }} className="text-sm">
+            {entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 const BarChart = ({ data, labelKey, title }) => {
   if (!data || data.length === 0) return null;
 
   return (
-    <div className="bg-surface-1 border border-border rounded-lg p-6">
+    <div className="bg-surface-1 border border-border rounded-lg p-6 h-80 flex flex-col">
       <h3 className="text-lg font-light text-text-primary mb-4">{title}</h3>
-      <div className="space-y-2">
-        {data.map((item) => {
-          const total = item.implemented + item.notImplemented;
-          const implPct = total > 0 ? (item.implemented / total) * 100 : 0;
-          const notImplPct = total > 0 ? (item.notImplemented / total) * 100 : 0;
-          return (
-            <div key={item[labelKey]}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-text-secondary truncate">{item[labelKey]}</span>
-                <span className="text-text-muted text-xs">
-                  {item.implemented}/{total} ({Math.round(implPct)}%)
-                </span>
-              </div>
-              <div className="h-6 bg-surface-2 rounded flex overflow-hidden">
-                {implPct > 0 && (
-                  <div
-                    style={{ width: `${implPct}%`, backgroundColor: STATUS_COLORS.Implemented }}
-                    className="h-full transition-all duration-150"
-                    title={`Implemented: ${item.implemented}`}
-                  />
-                )}
-                {notImplPct > 0 && (
-                  <div
-                    style={{ width: `${notImplPct}%`, backgroundColor: STATUS_COLORS['Not Implemented'] }}
-                    className="h-full transition-all duration-150"
-                    title={`Not Implemented: ${item.notImplemented}`}
-                  />
-                )}
-              </div>
-            </div>
-          );
-        })}
+      <div className="flex-1 w-full min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsBarChart
+            data={data}
+            layout="vertical"
+            margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
+            barSize={20}
+          >
+            <XAxis type="number" hide />
+            <YAxis 
+              dataKey={labelKey} 
+              type="category" 
+              axisLine={false} 
+              tickLine={false} 
+              width={150}
+              tick={{ fill: '#6B7280', fontSize: 12 }} 
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+            <Bar dataKey="implemented" name="Implemented" stackId="a" fill={STATUS_COLORS.Implemented} radius={[0, 0, 0, 0]} />
+            <Bar dataKey="notImplemented" name="Not Implemented" stackId="a" fill={STATUS_COLORS['Not Implemented']} radius={[0, 4, 4, 0]} />
+          </RechartsBarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
@@ -76,39 +84,35 @@ const ControlChart = ({ byControl }) => {
   const pending = byControl.filter(c => c.status === 'Pending' || !c.status).length;
   const total = byControl.length;
 
+  const data = [
+    { name: 'Implemented', value: impl, color: STATUS_COLORS.Implemented },
+    { name: 'Not Implemented', value: notImpl, color: STATUS_COLORS['Not Implemented'] },
+    { name: 'Pending', value: pending, color: STATUS_COLORS.Pending }
+  ].filter(d => d.value > 0);
+
   return (
-    <div className="bg-surface-1 border border-border rounded-lg p-6">
-      <h3 className="text-lg font-light text-text-primary mb-4">By Control</h3>
-      <div className="h-12 bg-surface-2 rounded flex overflow-hidden mb-3">
-        {impl > 0 && (
-          <div
-            style={{ width: `${(impl / total) * 100}%`, backgroundColor: STATUS_COLORS.Implemented }}
-            className="h-full transition-all duration-150 flex items-center justify-center"
-          >
-            <span className="text-xs text-white font-medium">{Math.round((impl / total) * 100)}%</span>
-          </div>
-        )}
-        {notImpl > 0 && (
-          <div
-            style={{ width: `${(notImpl / total) * 100}%`, backgroundColor: STATUS_COLORS['Not Implemented'] }}
-            className="h-full transition-all duration-150 flex items-center justify-center"
-          >
-            <span className="text-xs text-white font-medium">{Math.round((notImpl / total) * 100)}%</span>
-          </div>
-        )}
-        {pending > 0 && (
-          <div
-            style={{ width: `${(pending / total) * 100}%`, backgroundColor: STATUS_COLORS.Pending }}
-            className="h-full transition-all duration-150 flex items-center justify-center"
-          >
-            <span className="text-xs text-white font-medium">{Math.round((pending / total) * 100)}%</span>
-          </div>
-        )}
-      </div>
-      <div className="flex gap-4 text-sm flex-wrap">
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm" style={{ backgroundColor: STATUS_COLORS.Implemented }} /> Implemented ({impl} / {Math.round((impl / total) * 100)}%)</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm" style={{ backgroundColor: STATUS_COLORS['Not Implemented'] }} /> Not Implemented ({notImpl} / {Math.round((notImpl / total) * 100)}%)</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm" style={{ backgroundColor: STATUS_COLORS.Pending }} /> Pending ({pending} / {Math.round((pending / total) * 100)}%)</span>
+    <div className="bg-surface-1 border border-border rounded-lg p-6 h-80 flex flex-col">
+      <h3 className="text-lg font-light text-text-primary mb-4">Control Status Overview</h3>
+      <div className="flex-1 w-full min-h-0 flex items-center justify-center">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={5}
+              dataKey="value"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+            <Legend verticalAlign="bottom" height={36} />
+          </PieChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
@@ -155,7 +159,7 @@ const AdminUsersManager = ({ users: initialUsers }) => {
                 <td className="py-2 pr-4 text-text-primary">{u.fullName}</td>
                 <td className="py-2 pr-4 text-text-secondary">{u.email}</td>
                 <td className="py-2 pr-4">
-                  <span className={`text-xs font-mono px-2 py-0.5 rounded border ${u.role === 'admin' ? 'text-gold border-gold/30 bg-gold/10' : 'text-text-secondary border-border'}`}>
+                  <span className={`text-xs font-mono px-2 py-0.5 rounded border ${u.role === 'admin' ? 'text-primary border-primary/30 bg-primary-light' : 'text-text-secondary border-border'}`}>
                     {u.role}
                   </span>
                 </td>
@@ -164,7 +168,7 @@ const AdminUsersManager = ({ users: initialUsers }) => {
                     value={u.role}
                     onChange={(e) => handleRoleChange(u._id, e.target.value)}
                     disabled={saving === u._id}
-                    className="bg-[#0A0A0A] border border-border rounded px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-gold disabled:opacity-50"
+                    className="bg-white border border-border rounded px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-primary focus:ring-[2px] focus:ring-primary-light disabled:opacity-50"
                   >
                     <option value="user">user</option>
                     <option value="admin">admin</option>
@@ -241,7 +245,7 @@ export const DashboardPage = () => {
   if (error && !dashboardData) {
     return (
       <div className="text-center py-12">
-        <p className="text-[#8A5A5A]">{error}</p>
+        <p className="text-status-notImplemented">{error}</p>
       </div>
     );
   }
@@ -271,7 +275,7 @@ export const DashboardPage = () => {
                 else if (val === 'all') handleViewChange('all');
                 else handleViewChange('user', val);
               }}
-              className="bg-surface-1 border border-border rounded px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-gold"
+              className="bg-white border border-border rounded px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-[2px] focus:ring-primary-light"
             >
               <option value="me">My Dashboard</option>
               <option value="all">All Users</option>
