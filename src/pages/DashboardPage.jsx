@@ -1,0 +1,328 @@
+import { useState, useEffect, useCallback } from 'react';
+import { Shield, ShieldOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { getMyDashboard, getUserDashboard, getAllDashboard, getDashboardUsers, updateUserRole } from '../api';
+import { LoadingSpinner } from '../components/shared/LoadingSpinner';
+
+const STATUS_COLORS = {
+  Implemented: '#5A8A6A',
+  'Not Implemented': '#8A5A5A',
+  Pending: '#6B5520'
+};
+
+const StatCard = ({ label, count, percentage, color }) => (
+  <div className="bg-surface-1 border border-border rounded-lg p-6">
+    <p className="text-sm text-text-muted uppercase tracking-wider">{label}</p>
+    <p className="text-3xl font-light text-text-primary mt-1">
+      {count}
+      {percentage !== undefined && (
+        <span className="text-lg text-text-secondary ml-1">({percentage}%)</span>
+      )}
+    </p>
+    {color && (
+      <div className="mt-2 h-1 rounded-full" style={{ backgroundColor: color, width: `${Math.min(percentage || 0, 100)}%` }} />
+    )}
+  </div>
+);
+
+const BarChart = ({ data, labelKey, title }) => {
+  if (!data || data.length === 0) return null;
+
+  return (
+    <div className="bg-surface-1 border border-border rounded-lg p-6">
+      <h3 className="text-lg font-light text-text-primary mb-4">{title}</h3>
+      <div className="space-y-2">
+        {data.map((item) => {
+          const total = item.implemented + item.notImplemented;
+          const implPct = total > 0 ? (item.implemented / total) * 100 : 0;
+          const notImplPct = total > 0 ? (item.notImplemented / total) * 100 : 0;
+          return (
+            <div key={item[labelKey]}>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-text-secondary truncate">{item[labelKey]}</span>
+                <span className="text-text-muted text-xs">
+                  {item.implemented}/{total} ({Math.round(implPct)}%)
+                </span>
+              </div>
+              <div className="h-6 bg-surface-2 rounded flex overflow-hidden">
+                {implPct > 0 && (
+                  <div
+                    style={{ width: `${implPct}%`, backgroundColor: STATUS_COLORS.Implemented }}
+                    className="h-full transition-all duration-150"
+                    title={`Implemented: ${item.implemented}`}
+                  />
+                )}
+                {notImplPct > 0 && (
+                  <div
+                    style={{ width: `${notImplPct}%`, backgroundColor: STATUS_COLORS['Not Implemented'] }}
+                    className="h-full transition-all duration-150"
+                    title={`Not Implemented: ${item.notImplemented}`}
+                  />
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const ControlChart = ({ byControl }) => {
+  if (!byControl || byControl.length === 0) return null;
+
+  const impl = byControl.filter(c => c.status === 'Implemented').length;
+  const notImpl = byControl.filter(c => c.status === 'Not Implemented').length;
+  const pending = byControl.filter(c => c.status === 'Pending' || !c.status).length;
+  const total = byControl.length;
+
+  return (
+    <div className="bg-surface-1 border border-border rounded-lg p-6">
+      <h3 className="text-lg font-light text-text-primary mb-4">By Control</h3>
+      <div className="h-12 bg-surface-2 rounded flex overflow-hidden mb-3">
+        {impl > 0 && (
+          <div
+            style={{ width: `${(impl / total) * 100}%`, backgroundColor: STATUS_COLORS.Implemented }}
+            className="h-full transition-all duration-150 flex items-center justify-center"
+          >
+            <span className="text-xs text-white font-medium">{Math.round((impl / total) * 100)}%</span>
+          </div>
+        )}
+        {notImpl > 0 && (
+          <div
+            style={{ width: `${(notImpl / total) * 100}%`, backgroundColor: STATUS_COLORS['Not Implemented'] }}
+            className="h-full transition-all duration-150 flex items-center justify-center"
+          >
+            <span className="text-xs text-white font-medium">{Math.round((notImpl / total) * 100)}%</span>
+          </div>
+        )}
+        {pending > 0 && (
+          <div
+            style={{ width: `${(pending / total) * 100}%`, backgroundColor: STATUS_COLORS.Pending }}
+            className="h-full transition-all duration-150 flex items-center justify-center"
+          >
+            <span className="text-xs text-white font-medium">{Math.round((pending / total) * 100)}%</span>
+          </div>
+        )}
+      </div>
+      <div className="flex gap-4 text-sm flex-wrap">
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm" style={{ backgroundColor: STATUS_COLORS.Implemented }} /> Implemented ({impl} / {Math.round((impl / total) * 100)}%)</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm" style={{ backgroundColor: STATUS_COLORS['Not Implemented'] }} /> Not Implemented ({notImpl} / {Math.round((notImpl / total) * 100)}%)</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm" style={{ backgroundColor: STATUS_COLORS.Pending }} /> Pending ({pending} / {Math.round((pending / total) * 100)}%)</span>
+      </div>
+    </div>
+  );
+};
+
+const AdminUsersManager = ({ users: initialUsers }) => {
+  const [users, setUsers] = useState(initialUsers);
+  const [saving, setSaving] = useState(null);
+
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
+
+  const handleRoleChange = async (userId, newRole) => {
+    setSaving(userId);
+    try {
+      await updateUserRole(userId, newRole);
+      setUsers(prev => prev.map(u => u._id === userId ? { ...u, role: newRole } : u));
+    } catch {
+      // silent
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  if (!users || users.length === 0) return null;
+
+  return (
+    <div className="bg-surface-1 border border-border rounded-lg p-6">
+      <h3 className="text-lg font-light text-text-primary mb-4">User Management</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border text-text-muted text-xs uppercase tracking-wider">
+              <th className="text-left py-2 pr-4">Name</th>
+              <th className="text-left py-2 pr-4">Email</th>
+              <th className="text-left py-2 pr-4">Role</th>
+              <th className="text-right py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(u => (
+              <tr key={u._id} className="border-b border-border hover:bg-surface-2 transition-colors">
+                <td className="py-2 pr-4 text-text-primary">{u.fullName}</td>
+                <td className="py-2 pr-4 text-text-secondary">{u.email}</td>
+                <td className="py-2 pr-4">
+                  <span className={`text-xs font-mono px-2 py-0.5 rounded border ${u.role === 'admin' ? 'text-gold border-gold/30 bg-gold/10' : 'text-text-secondary border-border'}`}>
+                    {u.role}
+                  </span>
+                </td>
+                <td className="py-2 text-right">
+                  <select
+                    value={u.role}
+                    onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                    disabled={saving === u._id}
+                    className="bg-[#0A0A0A] border border-border rounded px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-gold disabled:opacity-50"
+                  >
+                    <option value="user">user</option>
+                    <option value="admin">admin</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export const DashboardPage = () => {
+  const { user } = useAuth();
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [viewMode, setViewMode] = useState('me');
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [users, setUsers] = useState([]);
+  const isAdmin = user?.role === 'admin';
+
+  const fetchDashboard = useCallback(async () => {
+    try {
+      let res;
+      if (viewMode === 'me') {
+        res = await getMyDashboard();
+      } else if (viewMode === 'all') {
+        res = await getAllDashboard();
+      } else if (viewMode === 'user' && selectedUserId) {
+        res = await getUserDashboard(selectedUserId);
+      }
+      if (res?.data?.success) {
+        setDashboardData(res.data.data);
+      }
+      setError(null);
+    } catch (err) {
+      setError('Failed to load dashboard');
+    } finally {
+      setLoading(false);
+    }
+  }, [viewMode, selectedUserId]);
+
+  useEffect(() => {
+    fetchDashboard();
+    const interval = setInterval(fetchDashboard, 30000);
+    return () => clearInterval(interval);
+  }, [fetchDashboard]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      getDashboardUsers().then(res => {
+        if (res.data.success) setUsers(res.data.data);
+      }).catch(() => {});
+    }
+  }, [isAdmin]);
+
+  const handleViewChange = (mode, userId = null) => {
+    setLoading(true);
+    setViewMode(mode);
+    setSelectedUserId(userId);
+  };
+
+  if (loading && !dashboardData) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error && !dashboardData) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-[#8A5A5A]">{error}</p>
+      </div>
+    );
+  }
+
+  const { stats, byStrategy, byCapability, byControl } = dashboardData || {};
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-light text-text-primary">Dashboard</h1>
+          <p className="text-text-muted text-sm mt-1">
+            {viewMode === 'me' && `Welcome, ${user?.fullName}`}
+            {viewMode === 'all' && 'All Users — Combined View'}
+            {viewMode === 'user' && users.find(u => u._id === selectedUserId)?.fullName}
+          </p>
+        </div>
+
+        {isAdmin && (
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-text-muted">View:</label>
+            <select
+              value={viewMode === 'me' ? 'me' : viewMode === 'all' ? 'all' : selectedUserId || 'me'}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === 'me') handleViewChange('me');
+                else if (val === 'all') handleViewChange('all');
+                else handleViewChange('user', val);
+              }}
+              className="bg-surface-1 border border-border rounded px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-gold"
+            >
+              <option value="me">My Dashboard</option>
+              <option value="all">All Users</option>
+              {users.map(u => (
+                <option key={u._id} value={u._id}>{u.fullName}</option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Total Controls" count={stats?.totalControls || 0} />
+        <StatCard
+          label="Implemented"
+          count={stats?.implemented?.count || 0}
+          percentage={stats?.implemented?.percentage || 0}
+          color={STATUS_COLORS.Implemented}
+        />
+        <StatCard
+          label="Pending"
+          count={stats?.pending?.count || 0}
+          percentage={stats?.pending?.percentage || 0}
+          color={STATUS_COLORS.Pending}
+        />
+        <StatCard
+          label="Not Implemented"
+          count={stats?.notImplemented?.count || 0}
+          percentage={stats?.notImplemented?.percentage || 0}
+          color={STATUS_COLORS['Not Implemented']}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <BarChart
+          data={byStrategy || []}
+          labelKey="strategyName"
+          title="By Strategy"
+        />
+        <BarChart
+          data={byCapability || []}
+          labelKey="capabilityName"
+          title="By Capability"
+        />
+      </div>
+
+      <ControlChart byControl={byControl || []} />
+
+      {isAdmin && users.length > 0 && (
+        <AdminUsersManager users={users} />
+      )}
+    </div>
+  );
+};
