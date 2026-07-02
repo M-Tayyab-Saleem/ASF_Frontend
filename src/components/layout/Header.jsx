@@ -3,6 +3,7 @@ import { Search, LayoutDashboard, LogOut } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { SearchModal } from './SearchModal';
 import { useAuth } from '../../context/AuthContext';
+import { Logo } from '../shared/Logo';
 
 export const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -21,11 +22,9 @@ export const Header = () => {
         <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
           <Link 
             to="/" 
-            className={`flex items-center gap-4 transition-colors ${location.pathname === '/' ? 'text-primary' : 'text-text-primary hover:text-primary'}`}
+            className={`flex items-center gap-3 transition-colors ${location.pathname === '/' ? 'text-primary' : 'text-text-primary hover:text-primary'}`}
           >
-            <span className="font-sans font-bold text-xl tracking-wider text-primary">
-              [ ASF ]
-            </span>
+            <Logo className="w-6 h-6" />
             <span className="text-text-secondary text-sm hidden sm:block font-medium">
               AI Security Framework
             </span>

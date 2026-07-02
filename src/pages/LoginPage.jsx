@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Logo } from '../components/shared/Logo';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -33,8 +34,8 @@ export const LoginPage = () => {
       {/* Left Column (Form) */}
       <div className="w-full lg:w-1/2 flex items-center justify-center relative bg-white">
         <div className="w-full max-w-md p-8 z-10">
-          <div className="text-center mb-8 lg:hidden">
-            <span className="font-sans text-primary font-bold text-2xl tracking-wider">[ ASF ]</span>
+          <div className="text-center mb-8 lg:hidden flex justify-center">
+            <Logo className="w-12 h-12" />
           </div>
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-text-primary mt-2">Sign in to your account</h1>
@@ -108,7 +109,7 @@ export const LoginPage = () => {
         
         <div className="max-w-lg text-center relative z-10">
           <div className="mb-10 flex justify-center">
-             <span className="font-sans text-primary font-bold text-7xl tracking-widest">[ ASF ]</span>
+             <Logo className="w-28 h-28" />
           </div>
           <h2 className="text-4xl font-bold text-text-primary mb-6">AI Security Framework</h2>
           <p className="text-text-secondary text-lg leading-relaxed">
