@@ -110,8 +110,8 @@ export const EvidenceSection = ({ controlId }) => {
 
   return (
     <div className="mt-8">
-      <hr className="border-border mb-6" />
-      <h3 className="text-lg font-medium text-text-primary mb-4">Evidence</h3>
+      <hr className="border-white/50 mb-6" />
+      <h3 className="text-lg  text-text-primary mb-4">Evidence</h3>
 
       <div className="mb-4">
         <label className="inline-flex items-center gap-2 cursor-pointer bg-primary text-text-onPrimary text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary-hover transition-colors">
@@ -152,7 +152,7 @@ export const EvidenceSection = ({ controlId }) => {
             </thead>
             <tbody>
               {evidenceList.map((item) => (
-                <tr key={item._id} className="border-b border-border hover:bg-surface-1 transition-colors bg-white even:bg-surface-1">
+                <tr key={item._id} className="border-b border-white/40 hover:bg-white/40 transition-colors bg-white/20 even:bg-white/30">
                   <td className="py-3 px-2 text-text-primary">
                     <span className="flex items-center gap-1">
                       {item.fileType === 'image' ? <Image size={14} className="text-text-muted" /> : <FileText size={14} className="text-text-muted" />}

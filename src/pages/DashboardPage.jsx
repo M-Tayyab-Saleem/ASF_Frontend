@@ -3,15 +3,16 @@ import { Shield, ShieldOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getMyDashboard, getUserDashboard, getAllDashboard, getDashboardUsers, updateUserRole } from '../api';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
+import { Dropdown } from '../components/shared/Dropdown';
 
 const STATUS_COLORS = {
-  Implemented: '#008575',
-  'Not Implemented': '#E02020',
-  Pending: '#F5A623'
+  Implemented: '#00B097', // Teal
+  'Not Implemented': '#EF4444',
+  Pending: '#F59E0B'
 };
 
 const StatCard = ({ label, count, percentage, color }) => (
-  <div className="bg-surface-1 border border-border rounded-lg p-6">
+  <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-xl p-6 shadow-glass hover:shadow-glass-hover transition-all duration-300">
     <p className="text-sm text-text-muted uppercase tracking-wider">{label}</p>
     <p className="text-3xl font-light text-text-primary mt-1">
       {count}
@@ -30,7 +31,7 @@ import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveCon
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white border border-border p-3 rounded-lg shadow-lg">
+      <div className="bg-white/90 backdrop-blur-md border border-white/50 p-3 rounded-lg shadow-glass">
         <p className="font-semibold text-text-primary mb-2">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} style={{ color: entry.color }} className="text-sm">
@@ -46,31 +47,37 @@ const CustomTooltip = ({ active, payload, label }) => {
 const BarChart = ({ data, labelKey, title }) => {
   if (!data || data.length === 0) return null;
 
+  // Calculate dynamic height based on number of items to prevent squishing
+  const MIN_HEIGHT = Math.max(data.length * 40, 200);
+
   return (
-    <div className="bg-surface-1 border border-border rounded-lg p-6 h-80 flex flex-col">
-      <h3 className="text-lg font-light text-text-primary mb-4">{title}</h3>
-      <div className="flex-1 w-full min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <RechartsBarChart
-            data={data}
-            layout="vertical"
-            margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
-            barSize={20}
-          >
-            <XAxis type="number" hide />
-            <YAxis 
-              dataKey={labelKey} 
-              type="category" 
-              axisLine={false} 
-              tickLine={false} 
-              width={150}
-              tick={{ fill: '#6B7280', fontSize: 12 }} 
-            />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-            <Bar dataKey="implemented" name="Implemented" stackId="a" fill={STATUS_COLORS.Implemented} radius={[0, 0, 0, 0]} />
-            <Bar dataKey="notImplemented" name="Not Implemented" stackId="a" fill={STATUS_COLORS['Not Implemented']} radius={[0, 4, 4, 0]} />
-          </RechartsBarChart>
-        </ResponsiveContainer>
+    <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-xl p-6 h-96 flex flex-col shadow-glass hover:shadow-glass-hover transition-all duration-300">
+      <h3 className="text-lg  text-text-primary mb-4">{title}</h3>
+      <div className="flex-1 w-full min-h-0 overflow-y-auto pr-2">
+        <div style={{ height: MIN_HEIGHT, width: '100%' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsBarChart
+              data={data}
+              layout="vertical"
+              margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
+              barSize={24}
+            >
+              <XAxis type="number" hide />
+              <YAxis 
+                dataKey={labelKey} 
+                type="category" 
+                axisLine={false} 
+                tickLine={false} 
+                width={200}
+                tick={{ fill: '#6B7280', fontSize: 12 }} 
+              />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+              <Bar dataKey="implemented" name="Implemented" stackId="a" fill={STATUS_COLORS.Implemented} />
+              <Bar dataKey="pending" name="Pending" stackId="a" fill={STATUS_COLORS.Pending} />
+              <Bar dataKey="notImplemented" name="Not Implemented" stackId="a" fill={STATUS_COLORS['Not Implemented']} radius={[0, 4, 4, 0]} />
+            </RechartsBarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
@@ -91,8 +98,8 @@ const ControlChart = ({ byControl }) => {
   ].filter(d => d.value > 0);
 
   return (
-    <div className="bg-surface-1 border border-border rounded-lg p-6 h-80 flex flex-col">
-      <h3 className="text-lg font-light text-text-primary mb-4">Control Status Overview</h3>
+    <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-xl p-6 h-80 flex flex-col shadow-glass hover:shadow-glass-hover transition-all duration-300">
+      <h3 className="text-lg  text-text-primary mb-4">Control Status Overview</h3>
       <div className="flex-1 w-full min-h-0 flex items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -141,9 +148,9 @@ const AdminUsersManager = ({ users: initialUsers }) => {
   if (!users || users.length === 0) return null;
 
   return (
-    <div className="bg-surface-1 border border-border rounded-lg p-6">
-      <h3 className="text-lg font-light text-text-primary mb-4">User Management</h3>
-      <div className="overflow-x-auto">
+    <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-xl p-6 shadow-glass hover:shadow-glass-hover transition-all duration-300">
+      <h3 className="text-lg  text-text-primary mb-4">User Management</h3>
+      <div className="overflow-visible">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-text-muted text-xs uppercase tracking-wider">
@@ -155,7 +162,7 @@ const AdminUsersManager = ({ users: initialUsers }) => {
           </thead>
           <tbody>
             {users.map(u => (
-              <tr key={u._id} className="border-b border-border hover:bg-surface-2 transition-colors">
+              <tr key={u._id} className="border-b border-white/40 hover:bg-white/40 transition-colors">
                 <td className="py-2 pr-4 text-text-primary">{u.fullName}</td>
                 <td className="py-2 pr-4 text-text-secondary">{u.email}</td>
                 <td className="py-2 pr-4">
@@ -164,15 +171,15 @@ const AdminUsersManager = ({ users: initialUsers }) => {
                   </span>
                 </td>
                 <td className="py-2 text-right">
-                  <select
+                  <Dropdown
                     value={u.role}
-                    onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                    onChange={(val) => handleRoleChange(u._id, val)}
                     disabled={saving === u._id}
-                    className="bg-white border border-border rounded px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-primary focus:ring-[2px] focus:ring-primary-light disabled:opacity-50"
-                  >
-                    <option value="user">user</option>
-                    <option value="admin">admin</option>
-                  </select>
+                    options={[
+                      { label: 'user', value: 'user' },
+                      { label: 'admin', value: 'admin' }
+                    ]}
+                  />
                 </td>
               </tr>
             ))}
@@ -256,7 +263,7 @@ export const DashboardPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-light text-text-primary">Dashboard</h1>
+          <h1 className="text-2xl  text-text-primary">Dashboard</h1>
           <p className="text-text-muted text-sm mt-1">
             {viewMode === 'me' && `Welcome, ${user?.fullName}`}
             {viewMode === 'all' && 'All Users — Combined View'}
@@ -267,22 +274,19 @@ export const DashboardPage = () => {
         {isAdmin && (
           <div className="flex items-center gap-2">
             <label className="text-sm text-text-muted">View:</label>
-            <select
+            <Dropdown
               value={viewMode === 'me' ? 'me' : viewMode === 'all' ? 'all' : selectedUserId || 'me'}
-              onChange={(e) => {
-                const val = e.target.value;
+              onChange={(val) => {
                 if (val === 'me') handleViewChange('me');
                 else if (val === 'all') handleViewChange('all');
                 else handleViewChange('user', val);
               }}
-              className="bg-white border border-border rounded px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-[2px] focus:ring-primary-light"
-            >
-              <option value="me">My Dashboard</option>
-              <option value="all">All Users</option>
-              {users.map(u => (
-                <option key={u._id} value={u._id}>{u.fullName}</option>
-              ))}
-            </select>
+              options={[
+                { label: 'My Dashboard', value: 'me' },
+                { label: 'All Users', value: 'all' },
+                ...users.map(u => ({ label: u.fullName, value: u._id }))
+              ]}
+            />
           </div>
         )}
       </div>

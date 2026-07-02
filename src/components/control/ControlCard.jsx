@@ -8,10 +8,10 @@ export const ControlCard = ({ control, isActive, onClick }) => {
     <button
       onClick={onClick}
       className={`
-        w-full text-left flex items-start gap-3 p-3 rounded transition-colors
+        w-full text-left flex items-start gap-3 p-3 rounded-xl transition-all duration-300
         ${isActive
-          ? 'bg-primary-light border-l-[3px] border-l-primary'
-          : 'hover:bg-surface-2 border-l-[3px] border-transparent'
+          ? 'bg-white/90 backdrop-blur-md border border-primary shadow-sm'
+          : 'bg-white/40 backdrop-blur-sm border border-transparent hover:bg-white/60 hover:border-white/50 cursor-pointer'
         }
       `}
     >

@@ -4,7 +4,7 @@ export const ToolCard = ({ tool }) => {
   if (!tool) return null;
 
   return (
-    <div className="bg-white border border-border rounded-lg p-4 hover:border-primary transition-colors duration-150">
+    <div className="bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl p-4 hover:border-primary/50 shadow-sm hover:shadow-glass hover:bg-white/80 transition-all duration-300">
       <div className="flex justify-between items-start mb-2">
         <h4 className="font-bold text-text-primary text-base">
           {tool.toolName}

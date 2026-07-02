@@ -4,7 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-white text-text-primary antialiased;
+    @apply bg-[#F2F9F8] text-text-primary antialiased font-normal font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight text-text-primary;
   }
 }
 

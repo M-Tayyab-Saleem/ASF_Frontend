@@ -61,7 +61,7 @@ export const CollapsibleControlRow = ({ control }) => {
             )}
           </div>
 
-          <h5 className="text-sm font-medium text-text-primary mb-3">Tools</h5>
+          <h5 className="text-sm  text-text-primary mb-3">Tools</h5>
           {control.tools && control.tools.length > 0 ? (
             <ToolGrid>
               {control.tools.map((tool) => (

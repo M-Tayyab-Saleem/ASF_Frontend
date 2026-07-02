@@ -5,10 +5,10 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#00B097',
-          hover: '#009A84',
+          DEFAULT: '#00B097', // Teal
+          hover: '#009681',
           light: '#E6F7F5',
-          dark: '#007A6A',
+          dark: '#007A68',
         },
         secondary: {
           DEFAULT: '#D3BDF2',
@@ -16,25 +16,25 @@ export default {
           dark: '#A98FD4',
         },
         surface: {
-          1: '#F8F9FA',
-          2: '#F1F3F5',
+          1: '#FFFFFF',
+          2: '#F8FAFC', // Slate 50
           dark: '#0D0D0D',
         },
         border: {
-          DEFAULT: '#E2E8F0',
-          strong: '#CBD5E0',
+          DEFAULT: 'rgba(255, 255, 255, 0.4)', // Glassmorphism border
+          strong: 'rgba(255, 255, 255, 0.6)',
           primary: '#00B097',
         },
         text: {
-          primary: '#0D0D0D',
-          secondary: '#4A5568',
-          muted: '#9AA3AF',
+          primary: '#0D1514', // Deep Teal-Black
+          secondary: '#334155', // Slate 700
+          muted: '#64748B', // Slate 500
           onDark: '#FFFFFF',
           onPrimary: '#FFFFFF',
         },
         status: {
-          implemented: '#10B981',
-          implementedBg: '#D1FAE5',
+          implemented: '#00B097',
+          implementedBg: '#E6F7F5',
           notImplemented: '#EF4444',
           notImplementedBg: '#FEE2E2',
           pending: '#F59E0B',
@@ -42,9 +42,13 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Rothek', '"Avenir Next"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"'],
         mono: ['Courier New', 'monospace'],
       },
+      boxShadow: {
+        'glass': '0 8px 32px 0 rgba(0, 176, 151, 0.05)',
+        'glass-hover': '0 12px 40px 0 rgba(0, 176, 151, 0.1)',
+      }
     },
   },
   plugins: [],

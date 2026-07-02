@@ -1,13 +1,13 @@
 const priorityColors = {
-  High: 'text-status-notImplemented bg-status-notImplementedBg border-status-notImplemented',
-  Medium: 'text-status-pending bg-status-pendingBg border-status-pending',
-  Low: 'text-text-secondary bg-surface-2 border-border',
+  High: 'text-status-notImplemented bg-status-notImplemented/10 border-status-notImplemented/20',
+  Medium: 'text-status-pending bg-status-pending/10 border-status-pending/20',
+  Low: 'text-text-secondary bg-surface-2 border-border/50',
 };
 
 const statusColors = {
-  Implemented: 'text-status-implemented bg-status-implementedBg border-status-implemented',
-  'Not Implemented': 'text-status-notImplemented bg-status-notImplementedBg border-status-notImplemented',
-  Pending: 'text-status-pending bg-status-pendingBg border-status-pending',
+  Implemented: 'text-status-implemented bg-status-implemented/10 border-status-implemented/20',
+  'Not Implemented': 'text-status-notImplemented bg-status-notImplemented/10 border-status-notImplemented/20',
+  Pending: 'text-status-pending bg-status-pending/10 border-status-pending/20',
 };
 
 export const Badge = ({ label, type = 'priority' }) => {

@@ -7,10 +7,10 @@ export const StrategyCard = ({ strategy, isActive, onClick }) => {
     <div
       onClick={onClick}
       className={`
-        relative cursor-pointer rounded-lg p-6 transition-all duration-150 ease-in-out
+        relative cursor-pointer rounded-xl p-6 transition-all duration-300 ease-in-out shadow-glass hover:shadow-glass-hover
         ${isActive 
-          ? 'bg-primary-light border-l-[3px] border-l-primary border-y border-r border-y-border border-r-border' 
-          : 'bg-white border border-border hover:bg-surface-1 hover:border-primary'
+          ? 'bg-white/90 backdrop-blur-md border border-primary ring-2 ring-primary/20' 
+          : 'bg-white/60 backdrop-blur-xl border border-white/40 hover:bg-white/80 hover:border-primary/50'
         }
       `}
     >
@@ -23,7 +23,7 @@ export const StrategyCard = ({ strategy, isActive, onClick }) => {
         )}
       </div>
       
-      <h3 className="text-lg font-light text-text-primary mb-2">
+      <h3 className="text-lg  text-text-primary mb-2">
         {strategy.strategyName}
       </h3>
       

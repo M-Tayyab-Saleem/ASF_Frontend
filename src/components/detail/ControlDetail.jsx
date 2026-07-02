@@ -54,7 +54,7 @@ export const ControlDetail = ({ controlId }) => {
   }
 
   return (
-    <div className="p-6 bg-white rounded-lg border border-border h-full overflow-y-auto">
+    <div className="p-6 bg-white/60 backdrop-blur-xl border border-white/40 shadow-glass rounded-xl h-full overflow-y-auto">
       <div className="mb-6 flex justify-between items-start">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -72,7 +72,7 @@ export const ControlDetail = ({ controlId }) => {
           )}
           {control.controlObjective && (
             <div className="mb-4">
-              <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Objective</h5>
+              <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 ">Objective</h5>
               <p className="text-sm text-text-secondary">{control.controlObjective}</p>
             </div>
           )}
@@ -89,36 +89,36 @@ export const ControlDetail = ({ controlId }) => {
         )}
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 bg-surface-1 p-4 rounded-lg border border-border">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 bg-white/50 p-4 rounded-xl border border-white/40 shadow-sm">
         {control.controlDomain && (
           <div>
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Domain</h5>
+            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 ">Domain</h5>
             <p className="text-sm text-text-secondary">{control.controlDomain}</p>
           </div>
         )}
         {control.owner && (
           <div>
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Owner</h5>
+            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 ">Owner</h5>
             <p className="text-sm text-text-secondary">{control.owner}</p>
           </div>
         )}
         {control.lifecycleStage && (
           <div>
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Lifecycle Stage</h5>
+            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 ">Lifecycle Stage</h5>
             <p className="text-sm text-text-secondary">{control.lifecycleStage}</p>
           </div>
         )}
         {control.implementationState && (
           <div>
-            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 font-semibold">Implementation</h5>
+            <h5 className="text-xs uppercase text-text-muted tracking-wider mb-1 ">Implementation</h5>
             <p className="text-sm text-text-secondary">{control.implementationState}</p>
           </div>
         )}
       </div>
 
-      <hr className="border-border my-6" />
+      <hr className="border-white/50 my-6" />
 
-      <h3 className="text-lg font-medium text-text-primary mb-4">Tools</h3>
+      <h3 className="text-lg  text-text-primary mb-4">Tools</h3>
       
       {control.tools && control.tools.length > 0 ? (
         <ToolGrid>

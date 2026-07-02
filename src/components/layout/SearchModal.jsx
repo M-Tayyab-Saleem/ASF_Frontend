@@ -87,10 +87,10 @@ export const SearchModal = ({ isOpen, onClose }) => {
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-3xl bg-white border border-border rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[80vh]">
+      <div className="relative w-full max-w-3xl bg-white/90 backdrop-blur-xl border border-white/40 rounded-xl shadow-glass overflow-hidden flex flex-col max-h-[80vh]">
         
         {/* Search Input Area */}
-        <div className="flex items-center px-4 py-4 border-b border-border bg-surface-1">
+        <div className="flex items-center px-4 py-4 border-b border-border bg-white/50">
           <Search className="text-text-muted mr-3" size={20} />
           <input
             ref={inputRef}
@@ -201,7 +201,7 @@ export const SearchModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-3 border-t border-border bg-surface-2 text-xs text-text-muted flex justify-between">
+        <div className="px-4 py-3 border-t border-border bg-white/40 text-xs text-text-muted flex justify-between">
           <span>Press <strong>Enter</strong> to select first result</span>
           <span>Press <strong>Esc</strong> to close</span>
         </div>
@@ -212,7 +212,7 @@ export const SearchModal = ({ isOpen, onClose }) => {
 
 const ResultSection = ({ title, children }) => (
   <div>
-    <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2 px-2">
+    <h3 className="text-xs  text-text-secondary uppercase tracking-wider mb-2 px-2">
       {title}
     </h3>
     <div className="space-y-1">
@@ -224,7 +224,7 @@ const ResultSection = ({ title, children }) => (
 const ResultItem = ({ id, name, desc, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full text-left flex items-start p-3 rounded-md hover:bg-surface-2 group transition-colors focus:outline-none focus:bg-surface-2 border border-transparent hover:border-border"
+    className="w-full text-left flex items-start p-3 rounded-lg hover:bg-white/60 hover:shadow-sm group transition-all duration-300 focus:outline-none focus:bg-white/60 border border-transparent hover:border-white/50 cursor-pointer"
   >
     <div className="mt-1 shrink-0">
       <IDTag id={id} />

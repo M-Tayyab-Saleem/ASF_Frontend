@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { updateControlStatus } from '../../api';
+import { Dropdown } from '../shared/Dropdown';
 
 export const StatusUpdate = ({ controlId, currentStatus, onStatusUpdate }) => {
   const [status, setStatus] = useState(currentStatus || 'Pending');
@@ -23,18 +24,18 @@ export const StatusUpdate = ({ controlId, currentStatus, onStatusUpdate }) => {
   };
 
   return (
-    <div className="bg-surface-1 border border-border rounded-lg p-4">
+    <div className="bg-white/50 backdrop-blur-sm border border-white/40 rounded-xl p-4 shadow-sm">
       <h4 className="text-sm text-text-muted uppercase tracking-wider mb-3">Update Status</h4>
       <div className="flex items-center gap-3">
-        <select
+        <Dropdown
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="bg-white border border-border rounded px-3 py-1.5 text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-[2px] focus:ring-primary-light"
-        >
-          <option value="Pending">Pending</option>
-          <option value="Implemented">Implemented</option>
-          <option value="Not Implemented">Not Implemented</option>
-        </select>
+          onChange={(val) => setStatus(val)}
+          options={[
+            { label: 'Pending', value: 'Pending' },
+            { label: 'Implemented', value: 'Implemented' },
+            { label: 'Not Implemented', value: 'Not Implemented' }
+          ]}
+        />
         <button
           onClick={handleSave}
           disabled={saving || status === currentStatus}

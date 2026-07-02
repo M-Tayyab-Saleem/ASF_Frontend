@@ -85,19 +85,19 @@ export const StrategyPage = () => {
   }
 
   return (
-    <div className="bg-white min-h-screen p-6 flex flex-col max-h-screen overflow-hidden">
-      <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0">
+    <div className="flex flex-col h-[calc(100vh-60px)] -mt-8">
+      <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0 pt-8 px-0 sm:px-6">
         <Breadcrumb items={breadcrumbItems} />
 
         <div className="flex flex-col md:flex-row gap-6 flex-1 min-h-0 pb-6">
           {/* Left Panel - List View */}
-          <div className="w-full md:w-[30%] flex flex-col min-h-0 bg-surface-1 border border-border rounded-lg overflow-hidden">
-            <div className="flex border-b border-border">
+          <div className="w-full md:w-[30%] flex flex-col min-h-0 bg-white/60 backdrop-blur-xl border border-white/40 shadow-glass rounded-xl overflow-hidden">
+            <div className="flex border-b border-white/40">
               <button
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'capabilities'
-                    ? 'text-primary border-b-2 border-primary bg-primary-light'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
+                    ? 'text-primary border-b-2 border-primary bg-white/50'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-white/30'
                 }`}
                 onClick={() => handleTabChange('capabilities')}
               >
@@ -106,8 +106,8 @@ export const StrategyPage = () => {
               <button
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'controls'
-                    ? 'text-primary border-b-2 border-primary bg-primary-light'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-surface-2'
+                    ? 'text-primary border-b-2 border-primary bg-white/50'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-white/30'
                 }`}
                 onClick={() => handleTabChange('controls')}
               >
@@ -140,7 +140,7 @@ export const StrategyPage = () => {
                 <ControlDetail controlId={itemId} />
               ) : null
             ) : (
-              <div className="flex-1 bg-surface-1 border border-border rounded-lg flex items-center justify-center p-8 text-center">
+              <div className="flex-1 bg-white/60 backdrop-blur-xl border border-white/40 shadow-glass rounded-xl flex items-center justify-center p-8 text-center">
                 <p className="text-text-muted">
                   Select a capability or control from the left
                 </p>
@@ -150,7 +150,7 @@ export const StrategyPage = () => {
           
           {/* Mobile Detail Overlay */}
           {itemId && (
-             <div className="md:hidden fixed inset-0 z-50 bg-white flex flex-col p-6">
+             <div className="md:hidden fixed inset-0 z-50 bg-white/95 backdrop-blur-xl flex flex-col p-6">
                 <button 
                   onClick={() => navigate(`/strategy/${strategyId}`)}
                   className="mb-4 text-primary"

@@ -58,10 +58,10 @@ export const SignupPage = () => {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="w-full max-w-md bg-white border border-border rounded-lg p-8">
+      <div className="w-full max-w-md bg-white/60 backdrop-blur-xl border border-white/40 shadow-glass rounded-2xl p-8">
         <div className="text-center mb-8">
           <span className="font-sans text-primary font-bold text-2xl tracking-wider">[ ASF ]</span>
-          <h1 className="text-xl font-light text-text-primary mt-2">Create your account</h1>
+          <h1 className="text-xl  text-text-primary mt-2">Create your account</h1>
         </div>
 
         {error && (
@@ -77,7 +77,7 @@ export const SignupPage = () => {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full bg-white border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary-light transition-all"
+              className="w-full bg-white/70 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:bg-white focus:shadow-[0_0_0_3px_rgba(0,176,151,0.2)] transition-all"
               required
             />
           </div>
@@ -88,7 +88,7 @@ export const SignupPage = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary-light transition-all"
+              className="w-full bg-white/70 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:bg-white focus:shadow-[0_0_0_3px_rgba(0,176,151,0.2)] transition-all"
               required
             />
           </div>
@@ -99,7 +99,7 @@ export const SignupPage = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary-light transition-all"
+              className="w-full bg-white/70 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:bg-white focus:shadow-[0_0_0_3px_rgba(0,176,151,0.2)] transition-all"
               required
             />
             <p className="text-xs text-text-muted mt-1">Min 8 chars, 1 uppercase, 1 number</p>
@@ -111,7 +111,7 @@ export const SignupPage = () => {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-white border border-border rounded px-3 py-2 text-text-primary focus:outline-none focus:border-primary focus:ring-[3px] focus:ring-primary-light transition-all"
+              className="w-full bg-white/70 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:bg-white focus:shadow-[0_0_0_3px_rgba(0,176,151,0.2)] transition-all"
               required
             />
           </div>

@@ -48,7 +48,7 @@ export const CapabilityDetail = ({ capabilityId }) => {
   }
 
   return (
-    <div className="p-6 bg-white rounded-lg border border-border h-full overflow-y-auto">
+    <div className="p-6 bg-white/60 backdrop-blur-xl border border-white/40 shadow-glass rounded-xl h-full overflow-y-auto">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <IDTag id={capability.capabilityId} />
@@ -64,9 +64,9 @@ export const CapabilityDetail = ({ capabilityId }) => {
         )}
       </div>
 
-      <hr className="border-border my-6" />
+      <hr className="border-white/50 my-6" />
 
-      <h3 className="text-lg font-medium text-text-primary mb-4">Controls</h3>
+      <h3 className="text-lg  text-text-primary mb-4">Controls</h3>
       
       {capability.controls && capability.controls.length > 0 ? (
         <div className="flex flex-col gap-3">
