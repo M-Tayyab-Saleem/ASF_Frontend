@@ -9,16 +9,14 @@ import { ProtectedRoute } from './components/shared/ProtectedRoute';
 
 function App() {
   return (
-    <PageWrapper>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-        <Route path="/strategy/:strategyId" element={<ProtectedRoute><StrategyPage /></ProtectedRoute>} />
-        <Route path="/strategy/:strategyId/:type/:itemId" element={<ProtectedRoute><StrategyPage /></ProtectedRoute>} />
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-      </Routes>
-    </PageWrapper>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/" element={<ProtectedRoute><PageWrapper><HomePage /></PageWrapper></ProtectedRoute>} />
+      <Route path="/strategy/:strategyId" element={<ProtectedRoute><PageWrapper><StrategyPage /></PageWrapper></ProtectedRoute>} />
+      <Route path="/strategy/:strategyId/:type/:itemId" element={<ProtectedRoute><PageWrapper><StrategyPage /></PageWrapper></ProtectedRoute>} />
+      <Route path="/dashboard" element={<ProtectedRoute><PageWrapper><DashboardPage /></PageWrapper></ProtectedRoute>} />
+    </Routes>
   );
 }
 
