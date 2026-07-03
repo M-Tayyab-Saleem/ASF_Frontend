@@ -37,4 +37,8 @@ export const getAllDashboard = () => api.get('/dashboard/all');
 export const getDashboardUsers = () => api.get('/dashboard/users');
 export const updateUserRole = (userId, role) => api.put(`/users/${userId}/role`, { role });
 
+// Auth OTP Features
+export const verifyOtp = (email, otp) => api.post('/auth/verify-otp', { email, otp });
+export const resendOtp = (email) => api.post('/auth/resend-otp', { email });
+
 export default api;

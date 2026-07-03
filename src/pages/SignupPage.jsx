@@ -4,13 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import { Logo } from '../components/shared/Logo';
 
 export const SignupPage = () => {
+  const [step, setStep] = useState('signup'); // 'signup' or 'otp'
+  const [registeredEmail, setRegisteredEmail] = useState('');
+  const [otp, setOtp] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+  const { signup, verifyOtp, resendOtp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -46,7 +49,13 @@ export const SignupPage = () => {
     try {
       const result = await signup(fullName, email, password);
       if (result.success) {
-        navigate('/');
+        if (result.data?.requireOtp) {
+          setRegisteredEmail(result.data.email);
+          setStep('otp');
+          setError('');
+        } else {
+          navigate('/');
+        }
       } else {
         setError(result.error || 'Signup failed');
       }
@@ -54,6 +63,44 @@ export const SignupPage = () => {
       setError(err.response?.data?.error || 'Signup failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setError('');
+    
+    if (otp.length !== 6) {
+      setError('Please enter a valid 6-digit code');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await verifyOtp(registeredEmail, otp);
+      if (result.success) {
+        navigate('/');
+      } else {
+        setError(result.error || 'Verification failed');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Verification failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError('');
+    try {
+      const result = await resendOtp(registeredEmail);
+      if (result.success) {
+        alert(result.data?.message || 'Code resent to your email');
+      } else {
+        setError(result.error || 'Failed to resend code');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to resend code');
     }
   };
 
@@ -65,82 +112,140 @@ export const SignupPage = () => {
           <div className="text-center mb-8 lg:hidden flex justify-center">
             <Logo className="w-12 h-12" />
           </div>
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-text-primary mt-2">Create your account</h1>
-            <p className="text-text-secondary mt-2">Join us to secure your AI deployments.</p>
-          </div>
+          
+          {step === 'signup' ? (
+            <>
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-text-primary mt-2">Create your account</h1>
+                <p className="text-text-secondary mt-2">Join us to secure your AI deployments.</p>
+              </div>
 
-          {error && (
-            <div className="mb-6 p-3 bg-status-notImplementedBg border border-status-notImplemented rounded-lg text-sm text-status-notImplemented">
-              {error}
-            </div>
+              {error && (
+                <div className="mb-6 p-3 bg-status-notImplementedBg border border-status-notImplemented rounded-lg text-sm text-status-notImplemented">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1.5">Full Name</label>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="John Doe"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1.5">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="john@example.com"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1.5">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="Create a password"
+                    required
+                  />
+                  <p className="text-xs text-text-muted mt-1.5">Min 8 chars, 1 uppercase, 1 number</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1.5">Confirm Password</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50 mt-4 shadow-lg shadow-primary/25"
+                >
+                  {loading ? 'Creating account...' : 'Create account'}
+                </button>
+              </form>
+
+              <p className="text-center text-text-muted text-sm mt-8">
+                Already have an account?{' '}
+                <Link to="/login" className="text-primary hover:text-primary-hover transition-colors font-semibold">
+                  Sign in
+                </Link>
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-text-primary mt-2">Check your email</h1>
+                <p className="text-text-secondary mt-2">
+                  We've sent a 6-digit verification code to <br />
+                  <span className="font-semibold text-text-primary">{registeredEmail}</span>
+                </p>
+              </div>
+
+              {error && (
+                <div className="mb-6 p-3 bg-status-notImplementedBg border border-status-notImplemented rounded-lg text-sm text-status-notImplemented">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1.5 text-center">Verification Code</label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    className="w-full text-center tracking-[0.5em] text-2xl font-mono bg-white border border-gray-200 rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="000000"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading || otp.length !== 6}
+                  className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50 mt-4 shadow-lg shadow-primary/25"
+                >
+                  {loading ? 'Verifying...' : 'Verify Email'}
+                </button>
+              </form>
+
+              <div className="text-center mt-8 space-y-4">
+                <p className="text-text-muted text-sm">
+                  Didn't receive the code?{' '}
+                  <button onClick={handleResendOtp} className="text-primary hover:text-primary-hover transition-colors font-semibold">
+                    Resend Code
+                  </button>
+                </p>
+                <p className="text-text-muted text-sm">
+                  <button onClick={() => setStep('signup')} className="hover:text-text-primary transition-colors">
+                    Back to signup
+                  </button>
+                </p>
+              </div>
+            </>
           )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">Full Name</label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                placeholder="John Doe"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                placeholder="john@example.com"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                placeholder="Create a password"
-                required
-              />
-              <p className="text-xs text-text-muted mt-1.5">Min 8 chars, 1 uppercase, 1 number</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">Confirm Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                placeholder="Confirm your password"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50 mt-4 shadow-lg shadow-primary/25"
-            >
-              {loading ? 'Creating account...' : 'Create account'}
-            </button>
-          </form>
-
-          <p className="text-center text-text-muted text-sm mt-8">
-            Already have an account?{' '}
-            <Link to="/login" className="text-primary hover:text-primary-hover transition-colors font-semibold">
-              Sign in
-            </Link>
-          </p>
         </div>
 
         {/* The Zig-Zag Divider */}
