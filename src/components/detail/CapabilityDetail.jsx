@@ -5,33 +5,37 @@ import { Badge } from '../shared/Badge';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { EmptyState } from '../shared/EmptyState';
 import { CollapsibleControlRow } from './CollapsibleControlRow';
+import { ToolForm } from '../tool/ToolForm';
+import { useAuth } from '../../context/AuthContext';
 
 export const CapabilityDetail = ({ capabilityId }) => {
   const [capability, setCapability] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [editingTool, setEditingTool] = useState(null);
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
+  const fetchDetail = async () => {
+    if (!capabilityId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getCapability(capabilityId);
+      if (response.data && response.data.success) {
+        setCapability(response.data.data);
+      } else {
+        setError('Capability not found.');
+      }
+    } catch (err) {
+      console.error('Error fetching capability detail:', err);
+      setError('Failed to load capability details.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!capabilityId) return;
-
-    const fetchDetail = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await getCapability(capabilityId);
-        if (response.data && response.data.success) {
-          setCapability(response.data.data);
-        } else {
-          setError('Capability not found.');
-        }
-      } catch (err) {
-        console.error('Error fetching capability detail:', err);
-        setError('Failed to load capability details.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDetail();
   }, [capabilityId]);
 
@@ -71,12 +75,25 @@ export const CapabilityDetail = ({ capabilityId }) => {
       {capability.controls && capability.controls.length > 0 ? (
         <div className="flex flex-col gap-3">
           {capability.controls.map((control) => (
-            <CollapsibleControlRow key={control.controlId} control={control} />
+            <CollapsibleControlRow 
+              key={control.controlId} 
+              control={control} 
+              isAdmin={isAdmin} 
+              onEditTool={(tool) => setEditingTool(tool)}
+            />
           ))}
         </div>
       ) : (
         <p className="text-sm text-text-muted">No controls mapped</p>
       )}
+
+      {/* ── Tool Edit Modal ── */}
+      <ToolForm
+        isOpen={!!editingTool}
+        onClose={() => setEditingTool(null)}
+        tool={editingTool}
+        onSaved={() => fetchDetail()}
+      />
     </div>
   );
 };

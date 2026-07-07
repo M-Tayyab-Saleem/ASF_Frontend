@@ -4,8 +4,8 @@ import api from '../api';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [user, setUser]     = useState(null);
+  const [token, setToken]   = useState(() => localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
   const fetchUser = useCallback(async () => {
@@ -28,9 +28,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+  useEffect(() => { fetchUser(); }, [fetchUser]);
 
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
@@ -42,36 +40,21 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
-  const signup = async (fullName, email, password) => {
-    const res = await api.post('/auth/signup', { fullName, email, password });
-    if (res.data.success && !res.data.data.requireOtp) {
-      localStorage.setItem('token', res.data.data.token);
-      setToken(res.data.data.token);
-      setUser(res.data.data.user);
-    }
-    return res.data;
-  };
-
-  const verifyOtp = async (email, otp) => {
-    const res = await api.post('/auth/verify-otp', { email, otp });
-    if (res.data.success) {
-      localStorage.setItem('token', res.data.data.token);
-      setToken(res.data.data.token);
-      setUser(res.data.data.user);
-    }
-    return res.data;
-  };
-
-  const resendOtp = async (email) => {
-    const res = await api.post('/auth/resend-otp', { email });
-    return res.data;
+  /**
+   * Called by AcceptInvitePage after the backend returns a JWT on invite acceptance.
+   * Stores the token and user directly without making a separate login request.
+   */
+  const activateAccount = (jwt, userData) => {
+    localStorage.setItem('token', jwt);
+    setToken(jwt);
+    setUser(userData);
   };
 
   const logout = async () => {
     try {
       await api.post('/auth/logout');
     } catch {
-      // ignore
+      // ignore network errors on logout
     }
     localStorage.removeItem('token');
     setToken(null);
@@ -79,7 +62,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, signup, logout, verifyOtp, resendOtp }}>
+    <AuthContext.Provider value={{ user, token, loading, login, activateAccount, logout }}>
       {children}
     </AuthContext.Provider>
   );

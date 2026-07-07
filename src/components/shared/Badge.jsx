@@ -10,7 +10,7 @@ const statusColors = {
   Pending: 'text-status-pending bg-status-pending/10 border-status-pending/20',
 };
 
-export const Badge = ({ label, type = 'priority' }) => {
+export const Badge = ({ label, type = 'priority', className = '' }) => {
   if (!label) return null;
 
   const colorClass =
@@ -20,7 +20,7 @@ export const Badge = ({ label, type = 'priority' }) => {
 
   return (
     <span
-      className={`rounded-full text-xs px-2 py-0.5 border font-mono whitespace-nowrap ${colorClass}`}
+      className={`rounded-full text-xs px-2 py-0.5 border font-mono whitespace-nowrap ${colorClass} ${className}`}
     >
       {label}
     </span>

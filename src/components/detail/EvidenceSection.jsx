@@ -3,6 +3,7 @@ import { Upload, Download, Trash2, FileText, Image } from 'lucide-react';
 import { getEvidence, uploadEvidence, downloadEvidence, deleteEvidence } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
+import { EvidenceFeed } from './EvidenceFeed';
 
 const formatFileSize = (bytes) => {
   if (bytes < 1024) return `${bytes} B`;
@@ -135,61 +136,12 @@ export const EvidenceSection = ({ controlId }) => {
 
       {loading ? (
         <div className="flex justify-center py-8"><LoadingSpinner /></div>
-      ) : evidenceList.length === 0 ? (
-        <p className="text-sm text-text-muted">No evidence uploaded yet</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-text-muted text-xs uppercase tracking-wider">
-                <th className="text-left py-2 px-2">File Name</th>
-                <th className="text-left py-2 px-2">Type</th>
-                <th className="text-right py-2 px-2">Size</th>
-                {isAdmin && <th className="text-left py-2 px-2">Uploaded By</th>}
-                <th className="text-right py-2 px-2">Uploaded At</th>
-                <th className="text-right py-2 px-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {evidenceList.map((item) => (
-                <tr key={item._id} className="border-b border-white/40 hover:bg-white/40 transition-colors bg-white/20 even:bg-white/30">
-                  <td className="py-3 px-2 text-text-primary">
-                    <span className="flex items-center gap-1">
-                      {item.fileType === 'image' ? <Image size={14} className="text-text-muted" /> : <FileText size={14} className="text-text-muted" />}
-                      {item.fileName}
-                    </span>
-                  </td>
-                  <td className="py-2 px-2 text-text-secondary uppercase">{item.fileType}</td>
-                  <td className="py-2 px-2 text-text-secondary text-right">{formatFileSize(item.fileSizeBytes)}</td>
-                  {isAdmin && (
-                    <td className="py-2 px-2 text-text-secondary">{item.uploadedBy?.fullName || 'Unknown'}</td>
-                  )}
-                  <td className="py-2 px-2 text-text-secondary text-right">{formatDate(item.uploadedAt)}</td>
-                  <td className="py-2 px-2 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => handleDownload(item)}
-                        className="p-1 text-text-muted hover:text-primary transition-colors"
-                        title="Download"
-                      >
-                        <Download size={14} />
-                      </button>
-                      {isAdmin && (
-                        <button
-                          onClick={() => handleDelete(item._id)}
-                          className="p-1 text-text-muted hover:text-status-notImplemented transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <EvidenceFeed 
+          evidenceList={evidenceList} 
+          onDownload={handleDownload} 
+          onDelete={handleDelete} 
+        />
       )}
     </div>
   );

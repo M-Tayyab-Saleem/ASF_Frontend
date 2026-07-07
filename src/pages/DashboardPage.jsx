@@ -1,40 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Shield, ShieldOff } from 'lucide-react';
+import { ShieldAlert, FileText, ChevronRight, Activity, PieChart as PieChartIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { getMyDashboard, getUserDashboard, getAllDashboard, getDashboardUsers, updateUserRole } from '../api';
+import { 
+  getImplementationProgress,
+  getImplementationTrend,
+  getTopRiskAreas,
+  getRecentEvidenceDashboard,
+  getControlsSummary
+} from '../api';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
-import { Dropdown } from '../components/shared/Dropdown';
-
-const STATUS_COLORS = {
-  Implemented: '#00B097', // Teal
-  'Not Implemented': '#EF4444',
-  Pending: '#F59E0B'
-};
-
-const StatCard = ({ label, count, percentage, color }) => (
-  <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-xl p-6 shadow-glass hover:shadow-glass-hover transition-all duration-300">
-    <p className="text-sm text-text-muted uppercase tracking-wider">{label}</p>
-    <p className="text-3xl font-light text-text-primary mt-1">
-      {count}
-      {percentage !== undefined && (
-        <span className="text-lg text-text-secondary ml-1">({percentage}%)</span>
-      )}
-    </p>
-    {color && (
-      <div className="mt-2 h-1 rounded-full" style={{ backgroundColor: color, width: `${Math.min(percentage || 0, 100)}%` }} />
-    )}
-  </div>
-);
-
-import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { Link } from 'react-router-dom';
+import { ImplementationTrendChart } from '../components/dashboard/ImplementationTrendChart';
+import { ImplementationProgressBar } from '../components/dashboard/ImplementationProgressBar';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } from 'recharts';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/90 backdrop-blur-md border border-white/50 p-3 rounded-lg shadow-glass">
-        <p className="font-semibold text-text-primary mb-2">{label}</p>
+      <div className="bg-white/95 backdrop-blur-md border border-slate-200 p-3 rounded-xl shadow-lg text-sm">
+        <p className="font-semibold text-slate-800 mb-1">{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} style={{ color: entry.color }} className="text-sm">
+          <p key={index} style={{ color: entry.color }}>
             {entry.name}: {entry.value}
           </p>
         ))}
@@ -44,293 +30,247 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const BarChart = ({ data, labelKey, title }) => {
-  if (!data || data.length === 0) return null;
+// ─── WIDGETS ─────────────────────────────────────────────────────────────────
 
-  // Calculate dynamic height based on number of items to prevent squishing
-  const MIN_HEIGHT = Math.max(data.length * 40, 200);
-
+const FrameworkScoreWidget = ({ summary }) => {
+  const { total = 0, implemented = 0, pending = 0, atRisk = 0 } = summary || {};
+  const score = total > 0 ? Math.round((implemented / total) * 100) : 0;
+  
   return (
-    <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-xl p-6 h-96 flex flex-col shadow-glass hover:shadow-glass-hover transition-all duration-300">
-      <h3 className="text-lg  text-text-primary mb-4">{title}</h3>
-      <div className="flex-1 w-full min-h-0 overflow-y-auto pr-2">
-        <div style={{ height: MIN_HEIGHT, width: '100%' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <RechartsBarChart
-              data={data}
-              layout="vertical"
-              margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
-              barSize={24}
-            >
-              <XAxis type="number" hide />
-              <YAxis 
-                dataKey={labelKey} 
-                type="category" 
-                axisLine={false} 
-                tickLine={false} 
-                width={200}
-                tick={{ fill: '#6B7280', fontSize: 12 }} 
-              />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-              <Bar dataKey="implemented" name="Implemented" stackId="a" fill={STATUS_COLORS.Implemented} />
-              <Bar dataKey="pending" name="Pending" stackId="a" fill={STATUS_COLORS.Pending} />
-              <Bar dataKey="notImplemented" name="Not Implemented" stackId="a" fill={STATUS_COLORS['Not Implemented']} radius={[0, 4, 4, 0]} />
-            </RechartsBarChart>
-          </ResponsiveContainer>
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+          <Activity size={18} className="text-[#00B097]" /> Framework Score
+        </h3>
+      </div>
+      
+      <div className="flex flex-col xl:flex-row xl:items-center gap-6">
+        <div className="flex flex-col justify-center items-center xl:items-start min-w-[80px]">
+          <span className="text-5xl lg:text-6xl font-bold text-[#00B097] leading-none">{score}%</span>
+        </div>
+        
+        <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-y-6 gap-x-4">
+          <div className="flex flex-col xl:border-l border-slate-100 xl:pl-6">
+            <div className="flex items-center gap-1.5 text-sm text-slate-600 mb-1 whitespace-nowrap">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#00B097]" /> Implemented
+            </div>
+            <span className="text-2xl font-semibold text-slate-800">{implemented}</span>
+          </div>
+          <div className="flex flex-col xl:border-l border-slate-100 xl:pl-6">
+            <div className="flex items-center gap-1.5 text-sm text-slate-600 mb-1 whitespace-nowrap">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" /> Pending
+            </div>
+            <span className="text-2xl font-semibold text-slate-800">{pending}</span>
+          </div>
+          <div className="flex flex-col xl:border-l border-slate-100 xl:pl-6">
+            <div className="flex items-center gap-1.5 text-sm text-slate-600 mb-1 whitespace-nowrap">
+              <div className="w-2.5 h-2.5 rounded-full bg-rose-500" /> At Risk
+            </div>
+            <span className="text-2xl font-semibold text-slate-800">{atRisk}</span>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const ControlChart = ({ byControl }) => {
-  if (!byControl || byControl.length === 0) return null;
-
-  const impl = byControl.filter(c => c.status === 'Implemented').length;
-  const notImpl = byControl.filter(c => c.status === 'Not Implemented').length;
-  const pending = byControl.filter(c => c.status === 'Pending' || !c.status).length;
-  const total = byControl.length;
-
+const ControlsByStatusWidget = ({ summary }) => {
   const data = [
-    { name: 'Implemented', value: impl, color: STATUS_COLORS.Implemented },
-    { name: 'Not Implemented', value: notImpl, color: STATUS_COLORS['Not Implemented'] },
-    { name: 'Pending', value: pending, color: STATUS_COLORS.Pending }
+    { name: 'Implemented', value: summary?.implemented || 0, color: '#00B097' },
+    { name: 'Pending', value: summary?.pending || 0, color: '#F59E0B' },
+    { name: 'At Risk', value: summary?.atRisk || 0, color: '#F43F5E' }
   ].filter(d => d.value > 0);
 
   return (
-    <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-xl p-6 h-80 flex flex-col shadow-glass hover:shadow-glass-hover transition-all duration-300">
-      <h3 className="text-lg  text-text-primary mb-4">Control Status Overview</h3>
-      <div className="flex-1 w-full min-h-0 flex items-center justify-center">
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 h-64 flex flex-col hover:shadow-md transition-shadow">
+      <h3 className="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
+        <PieChartIcon size={18} className="text-[#00B097]" /> Controls by Status
+      </h3>
+      <div className="flex-1 flex items-center justify-center relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              paddingAngle={5}
-              dataKey="value"
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
+            <Pie data={data} cx="30%" cy="50%" innerRadius={45} outerRadius={65} paddingAngle={2} dataKey="value" stroke="none">
+              {data.map((entry, index) => <Cell key={index} fill={entry.color} />)}
             </Pie>
-            <Tooltip content={<CustomTooltip />} />
-            <Legend verticalAlign="bottom" height={36} />
+            <RechartsTooltip content={<CustomTooltip />} />
           </PieChart>
         </ResponsiveContainer>
+        <div className="absolute left-[30%] top-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
+          <div className="text-2xl font-bold text-slate-800">{summary?.total || 0}</div>
+          <div className="text-[10px] text-slate-500 uppercase">Total</div>
+        </div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-3">
+           {data.map(d => (
+             <div key={d.name} className="flex items-center gap-2 text-xs">
+                <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{backgroundColor: d.color}} />
+                <span className="text-slate-600 font-medium">{d.name}</span>
+                <span className="font-bold text-slate-800 ml-auto pl-2">{d.value}</span>
+             </div>
+           ))}
+        </div>
       </div>
     </div>
   );
 };
 
-const AdminUsersManager = ({ users: initialUsers }) => {
-  const [users, setUsers] = useState(initialUsers);
-  const [saving, setSaving] = useState(null);
-
-  useEffect(() => {
-    setUsers(initialUsers);
-  }, [initialUsers]);
-
-  const handleRoleChange = async (userId, newRole) => {
-    setSaving(userId);
-    try {
-      await updateUserRole(userId, newRole);
-      setUsers(prev => prev.map(u => u._id === userId ? { ...u, role: newRole } : u));
-    } catch {
-      // silent
-    } finally {
-      setSaving(null);
-    }
-  };
-
-  if (!users || users.length === 0) return null;
-
+const TopRiskAreasWidget = ({ topRiskAreas }) => {
   return (
-    <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-xl p-6 shadow-glass hover:shadow-glass-hover transition-all duration-300">
-      <h3 className="text-lg  text-text-primary mb-4">User Management</h3>
-      <div className="overflow-visible">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-text-muted text-xs uppercase tracking-wider">
-              <th className="text-left py-2 pr-4">Name</th>
-              <th className="text-left py-2 pr-4">Email</th>
-              <th className="text-left py-2 pr-4">Role</th>
-              <th className="text-right py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(u => (
-              <tr key={u._id} className="border-b border-white/40 hover:bg-white/40 transition-colors">
-                <td className="py-2 pr-4 text-text-primary">{u.fullName}</td>
-                <td className="py-2 pr-4 text-text-secondary">{u.email}</td>
-                <td className="py-2 pr-4">
-                  <span className={`text-xs font-mono px-2 py-0.5 rounded border ${u.role === 'admin' ? 'text-primary border-primary/30 bg-primary-light' : 'text-text-secondary border-border'}`}>
-                    {u.role}
-                  </span>
-                </td>
-                <td className="py-2 text-right">
-                  <Dropdown
-                    value={u.role}
-                    onChange={(val) => handleRoleChange(u._id, val)}
-                    disabled={saving === u._id}
-                    options={[
-                      { label: 'user', value: 'user' },
-                      { label: 'admin', value: 'admin' }
-                    ]}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 h-64 flex flex-col hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+          <ShieldAlert size={18} className="text-rose-500" /> Top Risk Areas
+        </h3>
+        <Link to="/" className="text-xs font-medium text-[#00B097] hover:underline">View all</Link>
+      </div>
+      <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+        {topRiskAreas && topRiskAreas.length > 0 ? topRiskAreas.map((risk, i) => (
+          <div key={i} className="flex items-center justify-between text-sm p-2 rounded-lg hover:bg-slate-50 transition-colors">
+            <div className="flex items-center gap-2 text-slate-700 truncate pr-4">
+              <span className="truncate font-medium">{risk.area}</span>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide ${
+                 risk.level === 'High' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
+               }`}>{risk.level}</span>
+               <span className="font-semibold text-slate-800 w-4 text-right">{risk.count}</span>
+            </div>
+          </div>
+        )) : (
+          <div className="flex items-center justify-center h-full text-slate-400 text-sm">No significant risks identified.</div>
+        )}
       </div>
     </div>
   );
 };
+
+const RecentEvidenceWidget = ({ recentEvidence }) => {
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+          <FileText size={18} className="text-[#009681]" /> Recent Evidence
+        </h3>
+        <Link to="/evidence" className="text-xs font-medium text-[#00B097] hover:underline">View all</Link>
+      </div>
+      <div className="space-y-4">
+        {recentEvidence && recentEvidence.length > 0 ? recentEvidence.map(ev => (
+          <div key={ev.evidenceId} className="flex items-start gap-3 p-3 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors bg-slate-50/50">
+            <div className="p-2.5 bg-white shadow-sm border border-slate-100 rounded-lg text-[#009681] shrink-0">
+              <FileText size={18} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-semibold text-slate-800 truncate">{ev.fileName}</div>
+              <div className="text-xs font-medium text-slate-500 mt-0.5 truncate">{ev.controlName}</div>
+              <div className="text-[10px] text-slate-400 uppercase tracking-wider mt-1.5 font-semibold">
+                {ev.category}
+              </div>
+            </div>
+            <div className="text-xs text-slate-400 font-medium whitespace-nowrap bg-white px-2 py-1 rounded-md border border-slate-100 shadow-sm">
+              {new Date(ev.uploadedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            </div>
+          </div>
+        )) : (
+          <div className="text-center text-slate-400 text-sm py-4">No recent evidence uploaded.</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── DASHBOARD PAGE ──────────────────────────────────────────────────────────
 
 export const DashboardPage = () => {
   const { user } = useAuth();
-  const [dashboardData, setDashboardData] = useState(null);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState('me');
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [users, setUsers] = useState([]);
-  const isAdmin = user?.role === 'admin';
+  
+  const [trendData, setTrendData] = useState([]);
+  const [progressData, setProgressData] = useState([]);
+  const [riskData, setRiskData] = useState([]);
+  const [evidenceData, setEvidenceData] = useState([]);
+  const [summaryData, setSummaryData] = useState(null);
 
   const fetchDashboard = useCallback(async () => {
     try {
-      let res;
-      if (viewMode === 'me') {
-        res = await getMyDashboard();
-      } else if (viewMode === 'all') {
-        res = await getAllDashboard();
-      } else if (viewMode === 'user' && selectedUserId) {
-        res = await getUserDashboard(selectedUserId);
-      }
-      if (res?.data?.success) {
-        setDashboardData(res.data.data);
-      }
+      setLoading(true);
+      const [trendRes, progressRes, riskRes, evidenceRes, summaryRes] = await Promise.all([
+        getImplementationTrend(),
+        getImplementationProgress(),
+        getTopRiskAreas(),
+        getRecentEvidenceDashboard(),
+        getControlsSummary()
+      ]);
+
+      if (trendRes?.data?.success) setTrendData(trendRes.data.data);
+      if (progressRes?.data?.success) setProgressData(progressRes.data.data);
+      if (riskRes?.data?.success) setRiskData(riskRes.data.data);
+      if (evidenceRes?.data?.success) setEvidenceData(evidenceRes.data.data);
+      if (summaryRes?.data?.success) setSummaryData(summaryRes.data.data);
+
       setError(null);
     } catch (err) {
-      setError('Failed to load dashboard');
+      console.error(err);
+      setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
-  }, [viewMode, selectedUserId]);
+  }, []);
 
   useEffect(() => {
     fetchDashboard();
-    const interval = setInterval(fetchDashboard, 30000);
-    return () => clearInterval(interval);
   }, [fetchDashboard]);
 
-  useEffect(() => {
-    if (isAdmin) {
-      getDashboardUsers().then(res => {
-        if (res.data.success) setUsers(res.data.data);
-      }).catch(() => {});
-    }
-  }, [isAdmin]);
-
-  const handleViewChange = (mode, userId = null) => {
-    setLoading(true);
-    setViewMode(mode);
-    setSelectedUserId(userId);
-  };
-
-  if (loading && !dashboardData) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <LoadingSpinner />
-      </div>
-    );
+  if (loading) {
+    return <div className="flex justify-center items-center h-full min-h-[400px]"><LoadingSpinner /></div>;
   }
 
-  if (error && !dashboardData) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-status-notImplemented">{error}</p>
-      </div>
-    );
+  if (error) {
+    return <div className="text-center py-12 text-rose-500 font-medium bg-rose-50 rounded-xl">{error}</div>;
   }
-
-  const { stats, byStrategy, byCapability, byControl } = dashboardData || {};
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 pb-12 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
-          <h1 className="text-2xl  text-text-primary">Dashboard</h1>
-          <p className="text-text-muted text-sm mt-1">
-            {viewMode === 'me' && `Welcome, ${user?.fullName}`}
-            {viewMode === 'all' && 'All Users — Combined View'}
-            {viewMode === 'user' && users.find(u => u._id === selectedUserId)?.fullName}
-          </p>
+          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Executive Dashboard</h1>
+          <p className="text-slate-500 text-sm mt-1.5 font-medium">Real-time overview of security posture and control implementation</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 xl:gap-8 items-start">
+        {/* LEFT COLUMN: PRIMARY METRICS */}
+        <div className="xl:col-span-8 space-y-6">
+          <FrameworkScoreWidget summary={summaryData} />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ImplementationTrendChart data={trendData} />
+            <ControlsByStatusWidget summary={summaryData} />
+          </div>
+          
+          <ImplementationProgressBar data={progressData} />
         </div>
 
-        {isAdmin && (
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-text-muted">View:</label>
-            <Dropdown
-              value={viewMode === 'me' ? 'me' : viewMode === 'all' ? 'all' : selectedUserId || 'me'}
-              onChange={(val) => {
-                if (val === 'me') handleViewChange('me');
-                else if (val === 'all') handleViewChange('all');
-                else handleViewChange('user', val);
-              }}
-              options={[
-                { label: 'My Dashboard', value: 'me' },
-                { label: 'All Users', value: 'all' },
-                ...users.map(u => ({ label: u.fullName, value: u._id }))
-              ]}
-            />
+        {/* RIGHT COLUMN: RISKS & EVIDENCE */}
+        <div className="xl:col-span-4 space-y-6">
+          <TopRiskAreasWidget topRiskAreas={riskData} />
+          <RecentEvidenceWidget recentEvidence={evidenceData} />
+          
+          {/* Quick Actions (Optional, fits well with Data-Dense style) */}
+          <div className="bg-gradient-to-br from-[#00B097] to-[#009681] rounded-2xl p-6 shadow-md text-white">
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-2 opacity-90">Quick Actions</h3>
+            <p className="text-sm opacity-80 mb-4">Jump straight into managing your framework.</p>
+            <div className="space-y-2">
+              <Link to="/" className="flex items-center justify-between p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors text-sm font-medium">
+                View Strategies <ChevronRight size={16} />
+              </Link>
+              <Link to="/controls" className="flex items-center justify-between p-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors text-sm font-medium">
+                Manage Controls <ChevronRight size={16} />
+              </Link>
+            </div>
           </div>
-        )}
+        </div>
       </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Controls" count={stats?.totalControls || 0} />
-        <StatCard
-          label="Implemented"
-          count={stats?.implemented?.count || 0}
-          percentage={stats?.implemented?.percentage || 0}
-          color={STATUS_COLORS.Implemented}
-        />
-        <StatCard
-          label="Pending"
-          count={stats?.pending?.count || 0}
-          percentage={stats?.pending?.percentage || 0}
-          color={STATUS_COLORS.Pending}
-        />
-        <StatCard
-          label="Not Implemented"
-          count={stats?.notImplemented?.count || 0}
-          percentage={stats?.notImplemented?.percentage || 0}
-          color={STATUS_COLORS['Not Implemented']}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BarChart
-          data={byStrategy || []}
-          labelKey="strategyName"
-          title="By Strategy"
-        />
-        <BarChart
-          data={byCapability || []}
-          labelKey="capabilityName"
-          title="By Capability"
-        />
-      </div>
-
-      <ControlChart byControl={byControl || []} />
-
-      {isAdmin && users.length > 0 && (
-        <AdminUsersManager users={users} />
-      )}
     </div>
   );
 };

@@ -1,14 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-[#F2F9F8] text-text-primary antialiased font-normal font-sans;
+    @apply bg-[#F8FAFC] text-[#0D1514] antialiased;
+    font-family: 'Inter', sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight text-text-primary;
+    @apply font-bold tracking-tight text-[#0D1514];
   }
 }
 
@@ -35,4 +38,23 @@
 * {
   scrollbar-width: thin;
   scrollbar-color: #E2E8F0 #F8F9FA;
+}
+
+/* Sidebar Scrollbar Styles */
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: #0D1514; 
+}
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: #1E293B; 
+  border-radius: 3px;
+}
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00B097; 
+}
+.sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #1E293B #0D1514;
 }

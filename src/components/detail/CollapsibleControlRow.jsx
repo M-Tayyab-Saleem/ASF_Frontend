@@ -5,7 +5,7 @@ import { Badge } from '../shared/Badge';
 import { ToolGrid } from '../tool/ToolGrid';
 import { ToolCard } from '../tool/ToolCard';
 
-export const CollapsibleControlRow = ({ control }) => {
+export const CollapsibleControlRow = ({ control, isAdmin, onEditTool }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!control) return null;
@@ -65,7 +65,12 @@ export const CollapsibleControlRow = ({ control }) => {
           {control.tools && control.tools.length > 0 ? (
             <ToolGrid>
               {control.tools.map((tool) => (
-                <ToolCard key={tool.toolId} tool={tool} />
+                <ToolCard 
+                  key={tool.toolId} 
+                  tool={tool} 
+                  isAdmin={isAdmin} 
+                  onEdit={onEditTool} 
+                />
               ))}
             </ToolGrid>
           ) : (

@@ -82,12 +82,7 @@ export const LoginPage = () => {
             </button>
           </form>
 
-          <p className="text-center text-text-muted text-sm mt-8">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-primary hover:text-primary-hover transition-colors font-semibold">
-              Sign up
-            </Link>
-          </p>
+
         </div>
 
         {/* The Zig-Zag Divider */}
