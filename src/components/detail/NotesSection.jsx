@@ -46,7 +46,7 @@ export const NotesSection = ({ control, onNoteAdded }) => {
     <div className="mt-6">
       <div className="flex items-center gap-2 mb-3">
         <MessageSquare size={14} className="text-[#94A3B8]" />
-        <h3 className="text-sm font-semibold text-[#334155]">Notes</h3>
+        <h3 className="text-sm font-semibold text-[#334155]">Implementation Details</h3>
       </div>
 
       <div className="bg-white/60 backdrop-blur-xl border border-white/40 shadow-glass rounded-xl p-4">
@@ -67,7 +67,7 @@ export const NotesSection = ({ control, onNoteAdded }) => {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-[#94A3B8] mb-4">No notes added yet. Be the first to add one!</p>
+          <p className="text-sm text-[#94A3B8] mb-4">No implementation details added yet. Be the first to add one!</p>
         )}
 
         <form onSubmit={handleAddNote} className="relative">
@@ -75,7 +75,7 @@ export const NotesSection = ({ control, onNoteAdded }) => {
           <textarea
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
-            placeholder="Add a note..."
+            placeholder="Add implementation details..."
             rows={2}
             className="w-full pl-3 pr-12 py-2 rounded-xl border border-[#E2E8F0] focus:border-[#00B097] focus:ring-2 focus:ring-[#00B097]/10 outline-none text-sm resize-none bg-white/80"
           />
