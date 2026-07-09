@@ -118,7 +118,7 @@ const TopRiskAreasWidget = ({ topRiskAreas }) => {
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 h-64 flex flex-col hover:shadow-md transition-shadow">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-          <ShieldAlert size={18} className="text-rose-500" /> Top Risk Areas
+          <ShieldAlert size={18} className="text-rose-500" /> Top Gap Areas
         </h3>
         <Link to="/" className="text-xs font-medium text-[#00B097] hover:underline">View all</Link>
       </div>
@@ -136,7 +136,7 @@ const TopRiskAreasWidget = ({ topRiskAreas }) => {
             </div>
           </div>
         )) : (
-          <div className="flex items-center justify-center h-full text-slate-400 text-sm">No significant risks identified.</div>
+          <div className="flex items-center justify-center h-full text-slate-400 text-sm">No significant gaps identified.</div>
         )}
       </div>
     </div>
