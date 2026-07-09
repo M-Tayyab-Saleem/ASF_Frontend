@@ -74,6 +74,7 @@ export const revokeInvite = (id) => api.delete(`/invites/${id}`);
 export const getTool = (id) => api.get(`/tools/${id}`);
 export const createTool = (data) => api.post('/tools', data);
 export const updateTool = (id, data) => api.put(`/tools/${id}`, data);
+export const deleteTool = (id) => api.delete(`/tools/${id}`);
 export const setToolEffectiveness = (id, score) => api.patch(`/tools/${id}/effectiveness`, { score });
 export const getToolCategories = () => api.get('/tools/categories');
 

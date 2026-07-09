@@ -163,6 +163,12 @@ export const ControlDetail = ({ controlId }) => {
               <p className="text-sm text-[#334155]">{control.controlObjective}</p>
             </div>
           )}
+          {control.notes && (
+            <div className="col-span-2 sm:col-span-3 bg-white/60 border border-white/40 rounded-lg px-3 py-2">
+              <p className="text-[10px] text-[#94A3B8] uppercase tracking-wider mb-1">Notes</p>
+              <p className="text-sm text-[#334155]">{control.notes}</p>
+            </div>
+          )}
         </div>
       )}
 

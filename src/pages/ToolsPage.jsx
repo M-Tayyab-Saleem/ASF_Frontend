@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Pencil, Shield, Activity, Target } from 'lucide-react';
-import { getTools, setToolEffectiveness } from '../api';
+import { Plus, Search, Pencil, Shield, Activity, Target, Trash2 } from 'lucide-react';
+import { getTools, setToolEffectiveness, deleteTool } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { Breadcrumb } from '../components/shared/Breadcrumb';
 import { LoadingSpinner } from '../components/shared/LoadingSpinner';
@@ -60,6 +60,21 @@ export const ToolsPage = () => {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleDelete = async (tool) => {
+    if (!isAdmin) return;
+    if (window.confirm(`Are you sure you want to delete ${tool.name || tool.toolName}?`)) {
+      try {
+        const res = await deleteTool(tool._id || tool.toolId);
+        if (res.data?.success) {
+          setTools(prev => prev.filter(t => t._id !== (tool._id || tool.toolId) && t.toolId !== (tool._id || tool.toolId)));
+        }
+      } catch (err) {
+        console.error(err);
+        alert(err.response?.data?.error || 'Failed to delete tool');
+      }
     }
   };
 
@@ -168,13 +183,22 @@ export const ToolsPage = () => {
                     </td>
                     {isAdmin && (
                       <td className="py-3 px-4 text-right">
-                        <button
-                          onClick={() => handleEdit(tool)}
-                          className="p-1.5 text-[#94A3B8] hover:text-[#0D1514] hover:bg-[#F1F5F9] rounded transition-colors"
-                          title="Edit Tool"
-                        >
-                          <Pencil size={16} />
-                        </button>
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => handleEdit(tool)}
+                            className="p-1.5 text-[#94A3B8] hover:text-[#0D1514] hover:bg-[#F1F5F9] rounded transition-colors"
+                            title="Edit Tool"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(tool)}
+                            className="p-1.5 text-[#94A3B8] hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                            title="Delete Tool"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
