@@ -57,6 +57,7 @@ export const ControlDetail = ({ controlId }) => {
   const [showAddTool, setShowAddTool] = useState(false);
   const [allTools, setAllTools] = useState([]);
   const [mappingTool, setMappingTool] = useState(false);
+  const [selectedToolToAdd, setSelectedToolToAdd] = useState('');
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
@@ -110,6 +111,7 @@ export const ControlDetail = ({ controlId }) => {
 
   const handleAddToolClick = async () => {
     setShowAddTool(!showAddTool);
+    setSelectedToolToAdd('');
     if (!showAddTool && allTools.length === 0) {
       try {
         const res = await getTools();
@@ -120,18 +122,22 @@ export const ControlDetail = ({ controlId }) => {
     }
   };
 
-  const handleToolSelect = async (e) => {
-    const selectedToolId = e.target.value;
-    if (!selectedToolId) return;
+  const handleToolSelectChange = (e) => {
+    setSelectedToolToAdd(e.target.value);
+  };
+
+  const handleToolAddSubmit = async () => {
+    if (!selectedToolToAdd) return;
     
     setMappingTool(true);
     try {
       await addToolMapping({
-        toolId: selectedToolId,
+        toolId: selectedToolToAdd,
         controlId: control._id || control.controlId, // Use the correct ID for the DB
         verified: true
       });
       setShowAddTool(false);
+      setSelectedToolToAdd('');
       fetchControl(); // Refresh to show new mapped tool
     } catch (err) {
       console.error("Failed to map tool", err);
@@ -223,17 +229,26 @@ export const ControlDetail = ({ controlId }) => {
         {showAddTool && isAdmin && (
           <div className="mb-4 bg-white/60 p-3 rounded-lg border border-[#E2E8F0]">
             <label className="block text-xs font-semibold text-[#64748B] mb-1">Select tool to map</label>
-            <select 
-              className="w-full text-sm border border-[#E2E8F0] rounded-md px-3 py-2 bg-white"
-              onChange={handleToolSelect}
-              defaultValue=""
-              disabled={mappingTool}
-            >
-              <option value="" disabled>-- Select a Tool --</option>
-              {allTools.filter(t => !control.tools?.find(ct => (ct._id === t._id || ct.toolId === t._id))).map(t => (
-                <option key={t._id} value={t._id}>{t.name || t.toolName}</option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select 
+                className="flex-1 text-sm border border-[#E2E8F0] rounded-md px-3 py-2 bg-white"
+                onChange={handleToolSelectChange}
+                value={selectedToolToAdd}
+                disabled={mappingTool}
+              >
+                <option value="" disabled>-- Select a Tool --</option>
+                {allTools.filter(t => !control.tools?.find(ct => (ct._id === t._id || ct.toolId === t._id))).map(t => (
+                  <option key={t._id} value={t._id}>{t.name || t.toolName}</option>
+                ))}
+              </select>
+              <button 
+                onClick={handleToolAddSubmit}
+                disabled={!selectedToolToAdd || mappingTool}
+                className="px-4 py-2 bg-[#0EA5E9] hover:bg-[#0284C7] text-white text-sm font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Add
+              </button>
+            </div>
           </div>
         )}
 
