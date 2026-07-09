@@ -39,6 +39,7 @@ export const updateControlStatus = (controlId, status) =>
 export const suggestControlId = (category) => api.get(`/controls/suggest-id?category=${encodeURIComponent(category)}`);
 export const createControl = (data) => api.post('/controls', data);
 export const updateControl = (controlId, data) => api.put(`/controls/${controlId}`, data);
+export const addControlNote = (controlId, text) => api.post(`/controls/${controlId}/notes`, { text });
 export const updateLifecycle = (controlId, action, reason) =>
   api.patch(`/controls/${controlId}/lifecycle`, { action, reason });
 export const toggleAtRisk = (controlId, atRisk) =>

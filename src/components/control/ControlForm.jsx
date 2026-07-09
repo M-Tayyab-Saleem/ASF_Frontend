@@ -46,7 +46,6 @@ export const ControlForm = ({
     riskLevel:    '',
     capabilityId: '',
     strategyId:   '',
-    notes:        '',
   });
   const [errors, setErrors]         = useState({});
   const [globalError, setGlobalError] = useState('');
@@ -65,10 +64,9 @@ export const ControlForm = ({
         riskLevel:    control.riskLevel    || '',
         capabilityId: control.capabilityId || '',
         strategyId:   control.strategyId   || '',
-        notes:        control.notes        || '',
       });
     } else {
-      setForm({ controlId: '', title: '', description: '', category: '', riskLevel: '', capabilityId: '', strategyId: '', notes: '' });
+      setForm({ controlId: '', title: '', description: '', category: '', riskLevel: '', capabilityId: '', strategyId: '' });
     }
     setErrors({});
     setGlobalError('');
@@ -198,13 +196,6 @@ export const ControlForm = ({
             <textarea value={form.description} onChange={set('description')}
               placeholder="Describe what this control does and why it's important…"
               rows={3} className={`${inputCls(errors.description)} resize-none`} />
-          </Field>
-
-          {/* Notes */}
-          <Field label="Notes" error={errors.notes}>
-            <textarea value={form.notes} onChange={set('notes')}
-              placeholder="Additional notes for this control…"
-              rows={3} className={`${inputCls(errors.notes)} resize-none`} />
           </Field>
 
           {/* Category */}

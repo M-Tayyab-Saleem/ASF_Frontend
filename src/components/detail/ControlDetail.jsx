@@ -9,6 +9,7 @@ import { ToolGrid } from '../tool/ToolGrid';
 import { ToolCard } from '../tool/ToolCard';
 import { ToolForm } from '../tool/ToolForm';
 import { EvidenceSection } from './EvidenceSection';
+import { NotesSection } from './NotesSection';
 import { LifecycleTimeline } from '../control/LifecycleTimeline';
 import { ControlForm } from '../control/ControlForm';
 import { useAuth } from '../../context/AuthContext';
@@ -163,12 +164,6 @@ export const ControlDetail = ({ controlId }) => {
               <p className="text-sm text-[#334155]">{control.controlObjective}</p>
             </div>
           )}
-          {control.notes && (
-            <div className="col-span-2 sm:col-span-3 bg-white/60 border border-white/40 rounded-lg px-3 py-2">
-              <p className="text-[10px] text-[#94A3B8] uppercase tracking-wider mb-1">Notes</p>
-              <p className="text-sm text-[#334155]">{control.notes}</p>
-            </div>
-          )}
         </div>
       )}
 
@@ -198,6 +193,17 @@ export const ControlDetail = ({ controlId }) => {
 
       {/* ── Evidence ── */}
       <EvidenceSection controlId={control.controlId} />
+
+      {/* ── Notes ── */}
+      <NotesSection 
+        control={control} 
+        onNoteAdded={(newNote) => {
+          setControl(prev => ({
+            ...prev,
+            notes: [...(prev.notes || []), newNote]
+          }));
+        }}
+      />
 
       {/* ── Lifecycle History (collapsible) ── */}
       <div className="mt-6">
