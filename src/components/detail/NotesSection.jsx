@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
 import { addControlNote } from '../../api';
 
@@ -6,6 +6,7 @@ export const NotesSection = ({ control, onNoteAdded }) => {
   const [newNote, setNewNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const textareaRef = useRef(null);
 
   const notes = control?.notes || [];
 
@@ -20,6 +21,9 @@ export const NotesSection = ({ control, onNoteAdded }) => {
       const res = await addControlNote(control.controlId, newNote);
       if (res.data?.success) {
         setNewNote('');
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto';
+        }
         if (onNoteAdded) {
           onNoteAdded(res.data.data);
         }
@@ -28,6 +32,14 @@ export const NotesSection = ({ control, onNoteAdded }) => {
       setError(err.response?.data?.error || 'Failed to add note');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleTextChange = (e) => {
+    setNewNote(e.target.value);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
 
@@ -73,11 +85,13 @@ export const NotesSection = ({ control, onNoteAdded }) => {
         <form onSubmit={handleAddNote} className="relative">
           {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
           <textarea
+            ref={textareaRef}
             value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
+            onChange={handleTextChange}
             placeholder="Add implementation details..."
             rows={2}
-            className="w-full pl-3 pr-12 py-2 rounded-xl border border-[#E2E8F0] focus:border-[#00B097] focus:ring-2 focus:ring-[#00B097]/10 outline-none text-sm resize-none bg-white/80"
+            className="w-full pl-3 pr-12 py-2 rounded-xl border border-[#E2E8F0] focus:border-[#00B097] focus:ring-2 focus:ring-[#00B097]/10 outline-none text-sm resize-none bg-white/80 overflow-hidden"
+            style={{ minHeight: '40px' }}
           />
           <button
             type="submit"

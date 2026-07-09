@@ -61,9 +61,9 @@ export const ControlDetail = ({ controlId }) => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
-  const fetchControl = useCallback(async () => {
+  const fetchControl = useCallback(async (showLoader = true) => {
     if (!controlId) return;
-    setLoading(true);
+    if (showLoader) setLoading(true);
     setError(null);
     try {
       // First fetch the control
@@ -89,7 +89,7 @@ export const ControlDetail = ({ controlId }) => {
     } catch {
       setError('Failed to load control details.');
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   }, [controlId]);
 
@@ -136,9 +136,21 @@ export const ControlDetail = ({ controlId }) => {
         controlId: control._id || control.controlId, // Use the correct ID for the DB
         verified: true
       });
+      
+      // Optimistically update the UI to make it feel real-time
+      const newlyAddedTool = allTools.find(t => t._id === selectedToolToAdd);
+      if (newlyAddedTool) {
+        setControl(prev => ({
+          ...prev,
+          tools: [...(prev.tools || []), newlyAddedTool]
+        }));
+      }
+
       setShowAddTool(false);
       setSelectedToolToAdd('');
-      fetchControl(); // Refresh to show new mapped tool
+      
+      // Refresh in the background without showing a spinner
+      fetchControl(false); 
     } catch (err) {
       console.error("Failed to map tool", err);
       alert('Failed to map tool.');
@@ -215,6 +227,7 @@ export const ControlDetail = ({ controlId }) => {
           <div className="flex items-center gap-2">
             <Wrench size={14} className="text-[#94A3B8]" />
             <h3 className="text-sm font-semibold text-[#334155]">Linked Tools</h3>
+            {isAdmin && <span className="text-[10px] text-red-500 font-mono">(Debug: {control.tools?.length || 0} tools)</span>}
           </div>
           {isAdmin && (
             <button 
