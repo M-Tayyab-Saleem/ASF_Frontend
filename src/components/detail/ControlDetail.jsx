@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Pencil, ChevronDown, ChevronRight, AlertTriangle, User, Tag, Wrench, History, Plus } from 'lucide-react';
-import { getControl, getCapabilities, getLifecycleHistory, getTools, addToolMapping } from '../../api';
+import { getControl, getCapabilities, getLifecycleHistory, getTools, addToolMapping, removeToolMappingByToolAndControl } from '../../api';
 import { IDTag } from '../shared/IDTag';
 import { Badge } from '../shared/Badge';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
@@ -159,6 +159,24 @@ export const ControlDetail = ({ controlId }) => {
     }
   };
 
+  const handleDeleteTool = async (tool) => {
+    if (!window.confirm(`Remove ${tool.name || tool.toolName} from this control?`)) return;
+    try {
+      await removeToolMappingByToolAndControl(tool._id, control._id || control.controlId);
+      
+      // Optimistic update
+      setControl(prev => ({
+        ...prev,
+        tools: prev.tools.filter(t => t._id !== tool._id)
+      }));
+      
+      fetchControl(false);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to remove tool.');
+    }
+  };
+
   if (loading) return <div className="flex justify-center items-center h-64"><LoadingSpinner /></div>;
   if (error || !control) return <EmptyState message={error || 'Select a control to view details.'} />;
 
@@ -273,6 +291,7 @@ export const ControlDetail = ({ controlId }) => {
                 tool={tool} 
                 isAdmin={isAdmin} 
                 onEdit={() => setEditingTool(tool)}
+                onDelete={() => handleDeleteTool(tool)}
               />
             ))}
           </ToolGrid>
@@ -289,10 +308,10 @@ export const ControlDetail = ({ controlId }) => {
       {/* ── Notes ── */}
       <NotesSection 
         control={control} 
-        onNoteAdded={(newNote) => {
+        onNotesChanged={(newNotes) => {
           setControl(prev => ({
             ...prev,
-            notes: [...(prev.notes || []), newNote]
+            notes: newNotes
           }));
         }}
       />

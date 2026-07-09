@@ -40,6 +40,8 @@ export const suggestControlId = (category) => api.get(`/controls/suggest-id?cate
 export const createControl = (data) => api.post('/controls', data);
 export const updateControl = (controlId, data) => api.put(`/controls/${controlId}`, data);
 export const addControlNote = (controlId, text) => api.post(`/controls/${controlId}/notes`, { text });
+export const updateControlNote = (controlId, noteId, text) => api.put(`/controls/${controlId}/notes/${noteId}`, { text });
+export const deleteControlNote = (controlId, noteId) => api.delete(`/controls/${controlId}/notes/${noteId}`);
 export const updateLifecycle = (controlId, action, reason) =>
   api.patch(`/controls/${controlId}/lifecycle`, { action, reason });
 export const toggleAtRisk = (controlId, atRisk) =>
@@ -88,5 +90,6 @@ export const deleteOwner = (id) => api.delete(`/owners/${id}`);
 export const getToolMappings = (params) => api.get('/tool-mappings', { params });
 export const addToolMapping = (data) => api.post('/tool-mappings', data);
 export const removeToolMapping = (id) => api.delete(`/tool-mappings/${id}`);
+export const removeToolMappingByToolAndControl = (toolId, controlId) => api.delete(`/tool-mappings?toolId=${toolId}&controlId=${controlId}`);
 
 export default api;
