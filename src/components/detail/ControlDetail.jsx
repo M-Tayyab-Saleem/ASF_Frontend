@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Pencil, ChevronDown, ChevronRight, AlertTriangle, User, Tag, Wrench, History } from 'lucide-react';
-import { getControl, getCapabilities, getLifecycleHistory } from '../../api';
+import { Pencil, ChevronDown, ChevronRight, AlertTriangle, User, Tag, Wrench, History, Plus } from 'lucide-react';
+import { getControl, getCapabilities, getLifecycleHistory, getTools, addToolMapping } from '../../api';
 import { IDTag } from '../shared/IDTag';
 import { Badge } from '../shared/Badge';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
@@ -54,6 +54,9 @@ export const ControlDetail = ({ controlId }) => {
   const [editOpen, setEditOpen]     = useState(false);
   const [editingTool, setEditingTool] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showAddTool, setShowAddTool] = useState(false);
+  const [allTools, setAllTools] = useState([]);
+  const [mappingTool, setMappingTool] = useState(false);
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
@@ -103,6 +106,39 @@ export const ControlDetail = ({ controlId }) => {
   const handleHistoryToggle = () => {
     if (!showHistory) fetchHistory();
     setShowHistory(v => !v);
+  };
+
+  const handleAddToolClick = async () => {
+    setShowAddTool(!showAddTool);
+    if (!showAddTool && allTools.length === 0) {
+      try {
+        const res = await getTools();
+        if (res.data?.success) setAllTools(res.data.data);
+      } catch (err) {
+        console.error("Failed to fetch tools", err);
+      }
+    }
+  };
+
+  const handleToolSelect = async (e) => {
+    const selectedToolId = e.target.value;
+    if (!selectedToolId) return;
+    
+    setMappingTool(true);
+    try {
+      await addToolMapping({
+        toolId: selectedToolId,
+        controlId: control._id || control.controlId, // Use the correct ID for the DB
+        verified: true
+      });
+      setShowAddTool(false);
+      fetchControl(); // Refresh to show new mapped tool
+    } catch (err) {
+      console.error("Failed to map tool", err);
+      alert('Failed to map tool.');
+    } finally {
+      setMappingTool(false);
+    }
   };
 
   if (loading) return <div className="flex justify-center items-center h-64"><LoadingSpinner /></div>;
@@ -169,10 +205,38 @@ export const ControlDetail = ({ controlId }) => {
 
       {/* ── Tools ── */}
       <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Wrench size={14} className="text-[#94A3B8]" />
-          <h3 className="text-sm font-semibold text-[#334155]">Linked Tools</h3>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Wrench size={14} className="text-[#94A3B8]" />
+            <h3 className="text-sm font-semibold text-[#334155]">Linked Tools</h3>
+          </div>
+          {isAdmin && (
+            <button 
+              onClick={handleAddToolClick}
+              className="flex items-center gap-1 text-xs font-semibold text-[#0EA5E9] hover:text-[#0284C7] transition-colors"
+            >
+              <Plus size={14} /> Add Tool
+            </button>
+          )}
         </div>
+        
+        {showAddTool && isAdmin && (
+          <div className="mb-4 bg-white/60 p-3 rounded-lg border border-[#E2E8F0]">
+            <label className="block text-xs font-semibold text-[#64748B] mb-1">Select tool to map</label>
+            <select 
+              className="w-full text-sm border border-[#E2E8F0] rounded-md px-3 py-2 bg-white"
+              onChange={handleToolSelect}
+              defaultValue=""
+              disabled={mappingTool}
+            >
+              <option value="" disabled>-- Select a Tool --</option>
+              {allTools.filter(t => !control.tools?.find(ct => (ct._id === t._id || ct.toolId === t._id))).map(t => (
+                <option key={t._id} value={t._id}>{t.name || t.toolName}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {control.tools && control.tools.length > 0 ? (
           <ToolGrid>
             {control.tools.map((tool, i) => (
