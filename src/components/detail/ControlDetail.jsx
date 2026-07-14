@@ -250,7 +250,7 @@ export const ControlDetail = ({ controlId }) => {
           {isAdmin && (
             <button 
               onClick={handleAddToolClick}
-              className="flex items-center gap-1 text-xs font-semibold text-[#0EA5E9] hover:text-[#0284C7] transition-colors"
+              className="flex items-center gap-1 text-xs font-semibold text-[#00B097] hover:text-[#009681] transition-colors"
             >
               <Plus size={14} /> Add Tool
             </button>
@@ -275,7 +275,7 @@ export const ControlDetail = ({ controlId }) => {
               <button 
                 onClick={handleToolAddSubmit}
                 disabled={!selectedToolToAdd || mappingTool}
-                className="px-4 py-2 bg-[#0EA5E9] hover:bg-[#0284C7] text-white text-sm font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-[#00B097] hover:bg-[#009681] text-white text-sm font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Add
               </button>

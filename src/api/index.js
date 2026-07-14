@@ -92,4 +92,9 @@ export const addToolMapping = (data) => api.post('/tool-mappings', data);
 export const removeToolMapping = (id) => api.delete(`/tool-mappings/${id}`);
 export const removeToolMappingByToolAndControl = (toolId, controlId) => api.delete(`/tool-mappings?toolId=${toolId}&controlId=${controlId}`);
 
+export const getCapabilityToolMappings = (params) => api.get('/capability-tool-mappings', { params });
+export const addCapabilityToolMapping = (data) => api.post('/capability-tool-mappings', data);
+export const removeCapabilityToolMapping = (id) => api.delete(`/capability-tool-mappings/${id}`);
+export const removeCapabilityToolMappingByToolAndCapability = (toolId, capabilityId) => api.delete(`/capability-tool-mappings?toolId=${toolId}&capabilityId=${capabilityId}`);
+
 export default api;

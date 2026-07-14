@@ -81,7 +81,8 @@ export const Sidebar = ({ collapsed, setCollapsed }) => {
 
           <SectionHeading collapsed={collapsed}>Tools & Tech</SectionHeading>
           <SidebarLink to="/tools" icon={Wrench} label="Tools" badge="NEW" collapsed={collapsed} />
-          <SidebarLink to="/tool-mapping" icon={LinkIcon} label="Tool Mapping" collapsed={collapsed} />
+          <SidebarLink to="/tool-mapping" icon={LinkIcon} label="Control Mapping" collapsed={collapsed} />
+          <SidebarLink to="/capability-mapping" icon={LinkIcon} label="Capability Mapping" collapsed={collapsed} />
           <SidebarLink to="/tool-owners" icon={Users} label="Tool Owners" collapsed={collapsed} />
 
           {user?.role === 'admin' && (

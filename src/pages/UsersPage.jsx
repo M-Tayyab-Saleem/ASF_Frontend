@@ -214,7 +214,7 @@ export const UsersPage = () => {
         getInvites(),
         getUsers()
       ]);
-      setInvites(invRes.data.data || []);
+      setInvites((invRes.data.data || []).filter(inv => inv.status !== 'accepted'));
       setUsers(userRes.data.data || []);
     } catch {
       setToast({ message: 'Failed to load user data', type: 'error' });

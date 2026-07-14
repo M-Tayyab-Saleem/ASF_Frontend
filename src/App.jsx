@@ -9,6 +9,7 @@ import { UsersPage } from './pages/UsersPage';
 import { ToolsPage } from './pages/ToolsPage';
 import { ToolMappingPage } from './pages/ToolMappingPage';
 import { ToolOwnersPage } from './pages/ToolOwnersPage';
+import { ToolCapabilityMappingPage } from './pages/ToolCapabilityMappingPage';
 import { EvidencePage } from './pages/EvidencePage';
 import { ControlsPage } from './pages/ControlsPage';
 import { ProtectedRoute } from './components/shared/ProtectedRoute';
@@ -35,6 +36,7 @@ function App() {
       {/* Phase 3 Tools Module */}
       <Route path="/tools" element={<ProtectedRoute><PageWrapper><ToolsPage /></PageWrapper></ProtectedRoute>} />
       <Route path="/tool-mapping" element={<ProtectedRoute><PageWrapper><ToolMappingPage /></PageWrapper></ProtectedRoute>} />
+      <Route path="/capability-mapping" element={<ProtectedRoute><PageWrapper><ToolCapabilityMappingPage /></PageWrapper></ProtectedRoute>} />
       <Route path="/tool-owners" element={<ProtectedRoute><PageWrapper><ToolOwnersPage /></PageWrapper></ProtectedRoute>} />
     </Routes>
   );
